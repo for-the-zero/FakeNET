@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { FluentProvider, teamsLightTheme, teamsDarkTheme, Button } from '@fluentui/react-components';
-import { defaultConfig } from './utils/defaultConfig';
+import { FluentProvider, webLightTheme, webDarkTheme, Button } from '@fluentui/react-components';
+import { defaultConfig } from './utils/defaultValues';
 
 export function App(){
 
@@ -25,7 +25,7 @@ export function App(){
     useEffect(() => {
         const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
         const handleChange = (event: MediaQueryListEvent) => {
-            if(config.global.theme === 'auto'){
+            if(config.theme === 'auto'){
                 if(event.matches){
                     setIsDark(true);
                 } else {
@@ -38,23 +38,23 @@ export function App(){
             mediaQuery.removeEventListener('change', handleChange);
         };
     }, []);
-    const [isDark, setIsDark] = useState(config.global.theme === 'dark');
+    const [isDark, setIsDark] = useState(config.theme === 'dark');
     useEffect(() => {
-        if(config.global.theme === 'dark'){
+        if(config.theme === 'dark'){
             setIsDark(true);
-        } else if(config.global.theme === 'light'){
+        } else if(config.theme === 'light'){
             setIsDark(false);
-        } else if(config.global.theme === 'auto'){
+        } else if(config.theme === 'auto'){
             setIsDark(window.matchMedia('(prefers-color-scheme: dark)').matches);
         };
-    }, [config.global.theme]);
+    }, [config.theme]);
 
 
 
     // main
     return (
         <FluentProvider
-            theme={isDark ? teamsDarkTheme : teamsLightTheme}
+            theme={isDark ? webDarkTheme : webLightTheme}
             style={{ width: '100%', height: '100%' }}
         >
             <Button>Hello, world!</Button>

@@ -3,30 +3,47 @@ interface AIConfigType {
     baseURL: string,
     key: string,
     model: string,
-    thinkingControl: 'none' | 'prompt' | 'query'
+    thinkingControl: thinkingControl
+    temperature: number
 };
+type thinkingControl = 'none'
+    | 'qwen3_no_think'  // Qwen3   \no_think
+    | 'gemini_low'      // Gemini  "reasoning_effort": "low"
+    | 'gemini_none'     // Gemini  "reasoning_effort": "none"
+    | 'oai_minimal'     // CloseAI "reasoning": {"effort": 'minimal'}
+    | 'oai_low';        // CloseAI "reasoning": {"effort": 'low'}
 
 interface configType {
-    global: {
-        theme: 'auto' | 'light' | 'dark',
-        textAI: {
-            baseURL: string,
-            key: string,
-            model: string,
-            thinkingControl: 'none' | 'prompt' | 'query'
+    theme: 'auto' | 'light' | 'dark',
+    lang: 'auto' | 'zh-CN' | 'en',
+    defaultAI: {
+        baseURL: string,
+        key: string,
+        model: string,
+        thinkingControl: thinkingControl,
+        temperature: number
+    }
+    analyzeAI: AIConfigType,
+    titlesAI: AIConfigType,
+    articleAI: AIConfigType,
+    commentsAI: AIConfigType,
+    prompts: {
+        "zh-CN": {
+            analyze: string,
+            titles: string,
+            article: string,
+            comments: string
+        },
+        "en": {
+            analyze: string,
+            titles: string,
+            article: string,
+            comments: string
         }
     },
-    fakecol: {
-        analyzeAI: AIConfigType,
-        titleAI: AIConfigType,
-        articleAI: AIConfigType,
-        commentAI: AIConfigType,
-        usePic: boolean,
-        picAI: AIConfigType,
-    },
-    fakepst: {
-        analyzeAI: AIConfigType,
-        postsAI: AIConfigType,
-        picAI: AIConfigType,
+    preferences: {
+        titles: string[],
+        article: string[],
+        comments: string[]
     }
 };
