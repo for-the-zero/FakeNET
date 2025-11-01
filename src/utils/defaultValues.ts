@@ -20,8 +20,7 @@ export const defaultConfig = {
         baseURL: "",
         key: "",
         model: "",
-        thinkingControl: "none",
-        temperature: 0.7
+        thinkingControl: "none"
     },
     analyzeAI: {
         useGlobal: true,

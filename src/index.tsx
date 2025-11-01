@@ -1,7 +1,12 @@
 import { useState, useEffect } from 'react';
 import { FluentProvider, webLightTheme, webDarkTheme,
-    Button
+    Button, Title1, Text
 } from '@fluentui/react-components';
+import { 
+    ArrowCounterclockwiseRegular
+} from '@fluentui/react-icons';
+
+import { SetUI } from './settings/ui';
 
 import { defaultConfig } from './utils/defaultValues';
 import { useTranslation } from 'react-i18next';
@@ -75,9 +80,25 @@ export function App(){
     return (
         <FluentProvider
             theme={isDark ? webDarkTheme : webLightTheme}
-            style={{ width: '100%', height: '100%' }}
+            style={{
+                width: '100%', height: '100%', padding: '1rem',
+                display: 'flex', flexDirection: 'column', alignItems: 'center'
+            }}
         >
-            <Button>{t('test')}</Button>
+            <div style={{
+                width: '100%',
+                display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around'
+            }}>
+                <Title1>{t('title')}</Title1>
+                <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px'}}>
+                    <SetUI config={config} setConfig={setConfig} t={t} />
+                    <Button appearance="primary" icon={<ArrowCounterclockwiseRegular />}>
+                        <Text weight="regular">
+                            {t('refresh')}
+                        </Text>
+                    </Button>
+                </div>
+            </div>
         </FluentProvider>
     );
 };

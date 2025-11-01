@@ -19,7 +19,7 @@ i18n.use(initReactI18next)
         interpolation: {
             escapeValue: false
         },
-        debug: process.env.NODE_ENV === 'development',
+        //debug: process.env.NODE_ENV === 'development',
     });
 
 export default i18n;

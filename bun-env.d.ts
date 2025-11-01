@@ -21,7 +21,6 @@ interface configType {
         key: string,
         model: string,
         thinkingControl: thinkingControl,
-        temperature: number
     }
     analyzeAI: AIConfigType,
     titlesAI: AIConfigType,
