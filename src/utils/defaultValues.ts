@@ -12,7 +12,6 @@ export const defaultPrompts = {
         comments: require("./prompts/en/comments.md")
     }
 };
-console.log(defaultPrompts);
 
 export const defaultConfig = {
     theme: "auto",

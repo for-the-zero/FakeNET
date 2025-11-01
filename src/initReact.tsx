@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./index";
+import './i18n/i18n';
 
 const elem = document.getElementById("root")!;
 const app = (
