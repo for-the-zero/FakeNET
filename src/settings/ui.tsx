@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { Dispatch, SetStateAction } from 'react';
 import {
     Button, Text,
@@ -12,7 +12,18 @@ import {
 
 
 export function SetUI({config, setConfig, t}: {config: configType, setConfig: Dispatch<SetStateAction<configType>>, t: (key: string)=>string}){
+    
+    // tabs
     const [tab, setTab] = useState('app');
+
+    // flexible
+    const [isNotNarSc, setIsNotNarSc] = useState(window.innerWidth < 600);
+    useEffect(()=>{
+        const handleResize = () => {
+            setIsNotNarSc(window.innerWidth > 600);
+        };
+        window.addEventListener('resize', handleResize);
+    })
 
     return (<Dialog>
         <DialogTrigger disableButtonEnhancement>
@@ -28,20 +39,19 @@ export function SetUI({config, setConfig, t}: {config: configType, setConfig: Di
                         />
                     </DialogTrigger>} 
                 >{t('settings')}</DialogTitle>
-                <DialogContent style={{display: 'flex', flexDirection: "row", gap: '20px', minWidth: '500px'}}>
-                    <TabList selectedValue={tab} onTabSelect={(event, data: any)=>{setTab(data.value)}} vertical appearance='subtle'>
+                <DialogContent style={{display: 'flex', flexDirection: isNotNarSc ? 'row' : "column", gap: '20px'}}>
+                    <TabList selectedValue={tab} onTabSelect={(event, data: any)=>{setTab(data.value)}} vertical={isNotNarSc} appearance='subtle'>
                         <Tab value="app">{t('appset')}</Tab>
                         <Tab value="ai">{t('aiset')}</Tab>
-                        <Tab value="pmt">{t('pmtset')}</Tab>
                         <Tab value="pfr">{t('pfrset')}</Tab>
+                        <Tab value="about">{t('about')}</Tab>
                     </TabList>
                     <div> 
                         {tab==='app' && (<div>
                             <Field label="语言 / Language">
                                 <RadioGroup layout='horizontal' value={config.lang} onChange={(e,data)=>{
-                                    setConfig({...config, lang: data.value as 'auto' | 'zh-CN' | 'en'});
+                                    setConfig({...config, lang: data.value as 'zh-CN' | 'en'});
                                 }}>
-                                    <Radio value='auto' label='自动 / Auto' />
                                     <Radio value='zh-CN' label='中文' />
                                     <Radio value='en' label='English' />
                                 </RadioGroup>
@@ -59,8 +69,8 @@ export function SetUI({config, setConfig, t}: {config: configType, setConfig: Di
                         {tab==='ai' && (<div>
                             {/* TODO: */}
                         </div>)}
-                        {tab==='pmt' && (<div>Prompts</div>)}
                         {tab==='pfr' && (<div>Preferences</div>)}
+                        {tab==='about' && (<div>About</div>)}
                     </div>
                 </DialogContent>
             </DialogBody>

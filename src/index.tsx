@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { FluentProvider, webLightTheme, webDarkTheme,
-    Button, Title1, Text
+    Button, Title3, Text
 } from '@fluentui/react-components';
 import { 
     ArrowCounterclockwiseRegular
@@ -67,12 +67,8 @@ export function App(){
     const { t, i18n } = useTranslation();
     useEffect(() => {
         if (isConfigLoaded) {
-            let langToSet = config.lang;
-            if (config.lang === 'auto') {
-                langToSet = navigator.languages[0]?.toLowerCase().startsWith('zh') ? 'zh-CN' : 'en';
-            };
-            i18n.changeLanguage(langToSet);
-        }
+            i18n.changeLanguage(config.lang);
+        };
     }, [config.lang, isConfigLoaded, i18n]);
 
 
@@ -89,7 +85,7 @@ export function App(){
                 width: '100%',
                 display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around'
             }}>
-                <Title1>{t('title')}</Title1>
+                <Title3>{t('title')}</Title3>
                 <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px'}}>
                     <SetUI config={config} setConfig={setConfig} t={t} />
                     <Button appearance="primary" icon={<ArrowCounterclockwiseRegular />}>

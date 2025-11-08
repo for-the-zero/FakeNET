@@ -30,19 +30,12 @@ Allowed content includes, but is not limited to:
 
 You may conduct an analysis before providing multiple comments, with replies restricted to a maximum of one layer. Your final result must be in JSON format, provided within a Markdown JSON code block.
 
-```json
+\`\`\`json
 [
     {
         "username": "Username",
-        "content": "Comment content",
-        "replies": [
-            {
-                "username": "Username",
-                "content": "Reply content"
-            },
-            ...
-        ]
+        "content": "Comment content"
     },
     ...
 ]
-```
+\`\`\`

@@ -10,10 +10,10 @@ The content you need to generate includes the article title and an overview (app
 
 You will receive a list of user preferences, such as:
 
-```markdown
+\`\`\`markdown
 - Likes professional articles
 - Passionate about front-end technology
-```
+\`\`\`
 
 The pushed content should align with the preference description to some extent, but not entirely.
 
@@ -60,7 +60,7 @@ You may provide an analysis before listing approximately 10 pieces of pushed con
 
 The required format is as follows:
 
-```json
+\`\`\`json
 [
     {
         "title": "Title",
@@ -69,4 +69,4 @@ The required format is as follows:
     },
     ...
 ]
-```
+\`\`\`

@@ -15,7 +15,7 @@ type thinkingControl = 'none'
 
 interface configType {
     theme: 'auto' | 'light' | 'dark',
-    lang: 'auto' | 'zh-CN' | 'en',
+    lang: 'zh-CN' | 'en',
     defaultAI: {
         baseURL: string,
         key: string,

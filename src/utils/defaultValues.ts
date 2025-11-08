@@ -1,21 +1,8 @@
-export const defaultPrompts = {
-    "zh-CN": {
-        analyze: require("./prompts/zh-CN/analyze.md"),
-        titles: require("./prompts/zh-CN/titles.md"),
-        article: require("./prompts/zh-CN/article.md"),
-        comments: require("./prompts/zh-CN/comments.md")
-    },
-    "en":{
-        analyze: require("./prompts/en/analyze.md"),
-        titles: require("./prompts/en/titles.md"),
-        article: require("./prompts/en/article.md"),
-        comments: require("./prompts/en/comments.md")
-    }
-};
+import { defaultPrompts } from "./defaultPrompts";
 
 export const defaultConfig = {
     theme: "auto",
-    lang: "auto",
+    lang: navigator.languages[0]?.toLowerCase().startsWith('zh') ? 'zh-CN' : 'en',
     defaultAI: {
         baseURL: "",
         key: "",
