@@ -1,14 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useId } from 'react';
 import type { Dispatch, SetStateAction } from 'react';
 import {
     Button, Text,
     Dialog, DialogTrigger, DialogSurface, DialogBody, DialogTitle, DialogContent,
     Tab, TabList,
-    Field, Radio, RadioGroup
+    Field, Radio, RadioGroup, Input,
+    Tooltip, Toaster, Toast, useToastController, ToastTitle
 } from '@fluentui/react-components';
 import {
-    SettingsRegular, Dismiss24Regular
+    SettingsRegular, Dismiss24Regular, SaveRegular, WarningRegular
 } from '@fluentui/react-icons';
+
+import { testImporting } from '../utils/testConfig';
 
 
 export function SetUI({config, setConfig, t}: {config: configType, setConfig: Dispatch<SetStateAction<configType>>, t: (key: string)=>string}){
@@ -17,13 +20,26 @@ export function SetUI({config, setConfig, t}: {config: configType, setConfig: Di
     const [tab, setTab] = useState('app');
 
     // flexible
-    const [isNotNarSc, setIsNotNarSc] = useState(window.innerWidth < 600);
+    const [isNotNarSc, setIsNotNarSc] = useState(window.innerWidth > 600);
     useEffect(()=>{
         const handleResize = () => {
             setIsNotNarSc(window.innerWidth > 600);
         };
         window.addEventListener('resize', handleResize);
-    })
+    });
+
+    // import
+    const [importing, setImporting] = useState('');
+    const [isImportingValid, setIsImportingValid] = useState(false);
+    useEffect(()=>{
+        if(testImporting(importing)){setIsImportingValid(true);
+        }else{setIsImportingValid(false);};
+    }, [importing]);
+
+    // toast
+    const toasterId = useId();
+    const { dispatchToast } = useToastController(toasterId);
+    
 
     return (<Dialog>
         <DialogTrigger disableButtonEnhancement>
@@ -31,7 +47,8 @@ export function SetUI({config, setConfig, t}: {config: configType, setConfig: Di
         </DialogTrigger>
         <DialogSurface>
             <DialogBody>
-                <DialogTitle action={<DialogTrigger action="close">
+                <DialogTitle action={
+                    <DialogTrigger action="close">
                         <Button
                             appearance="subtle"
                             aria-label="close"
@@ -65,13 +82,43 @@ export function SetUI({config, setConfig, t}: {config: configType, setConfig: Di
                                     <Radio value='dark' label={t('appset_theme_dark')} />
                                 </RadioGroup>
                             </Field>
+                            <Field label={t('appset_port')} style={{gap: '8px'}}>
+                                <Field label={t('appset_import')} orientation='horizontal'>
+                                    <div style={{display: 'flex', flexDirection: 'row'}}>
+                                        <Input value={importing} onChange={(e,data)=>{setImporting(data.value)}}
+                                            contentAfter={!isImportingValid ? (
+                                                <Tooltip content={t('appset_import_tip')} relationship="description">
+                                                    <WarningRegular />
+                                                </Tooltip>
+                                            ) : null} 
+                                        />
+                                        <Button icon={<SaveRegular />} appearance='subtle' disabled={!isImportingValid} onClick={()=>{
+                                            let test = testImporting(importing);
+                                            if(test){
+                                                setConfig(test);
+                                            };
+                                        }} />
+                                    </div>
+                                </Field>
+                                <Field label={t('appset_export')} orientation='horizontal'>
+                                    <Button onClick={()=>{
+                                        navigator.clipboard.writeText(JSON.stringify(config));
+                                        dispatchToast(<Toast><ToastTitle>
+                                            {t('appset_export_success')}
+                                        </ToastTitle></Toast>,{intent:'success'});
+                                    }}><Text weight='regular'>{t('appset_export_btn')}</Text></Button>
+                                </Field>
+                            </Field>
                         </div>)}
                         {tab==='ai' && (<div>
-                            {/* TODO: */}
+                            <Field label="titleAI">
+                                {/* TODO: */}
+                            </Field>
                         </div>)}
                         {tab==='pfr' && (<div>Preferences</div>)}
                         {tab==='about' && (<div>About</div>)}
                     </div>
+                    <Toaster toasterId={toasterId} />
                 </DialogContent>
             </DialogBody>
         </DialogSurface>

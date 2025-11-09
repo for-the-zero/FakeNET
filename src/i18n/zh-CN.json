@@ -9,6 +9,12 @@
     "appset_theme_auto": "自动",
     "appset_theme_light": "浅色",
     "appset_theme_dark": "深色",
+    "appset_port": "导入与导出",
+    "appset_import": "导入配置JSON",
+    "appset_import_tip": "配置不符合规范，请检查再试",
+    "appset_export": "导出配置JSON",
+    "appset_export_btn": "点击复制",
+    "appset_export_success": "已复制到剪贴板",
     "aiset": "AI设置",
     "pfrset": "偏好设置",
     "about": "关于"

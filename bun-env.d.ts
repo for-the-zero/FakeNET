@@ -1,5 +1,4 @@
 interface AIConfigType {
-    useGlobal: boolean,
     baseURL: string,
     key: string,
     model: string,
@@ -16,12 +15,6 @@ type thinkingControl = 'none'
 interface configType {
     theme: 'auto' | 'light' | 'dark',
     lang: 'zh-CN' | 'en',
-    defaultAI: {
-        baseURL: string,
-        key: string,
-        model: string,
-        thinkingControl: thinkingControl,
-    }
     analyzeAI: AIConfigType,
     titlesAI: AIConfigType,
     articleAI: AIConfigType,
