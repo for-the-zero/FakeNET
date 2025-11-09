@@ -1,21 +1,92 @@
-import { useState, useEffect, useId } from 'react';
+import { useState, useEffect, useId, use } from 'react';
 import type { Dispatch, SetStateAction } from 'react';
 import {
-    Button, Text,
+    Button, Text, InfoLabel,
     Dialog, DialogTrigger, DialogSurface, DialogBody, DialogTitle, DialogContent,
     Tab, TabList,
-    Field, Radio, RadioGroup, Input,
+    Field, Radio, RadioGroup, Input, Slider, Dropdown, Option,
     Tooltip, Toaster, Toast, useToastController, ToastTitle
 } from '@fluentui/react-components';
 import {
-    SettingsRegular, Dismiss24Regular, SaveRegular, WarningRegular
+    SettingsRegular, Dismiss24Regular, SaveRegular, WarningRegular, CopyRegular, EyeRegular, EyeOffRegular
 } from '@fluentui/react-icons';
 
 import { testImporting } from '../utils/testConfig';
 
+function SetAI({label, aiConfig, onChange, t, prompt, onPmtChange}: 
+    {label: string, aiConfig: AIConfigType, onChange: (newConfig: AIConfigType)=>void, t: (key: string)=>string, prompt: string, onPmtChange: (newPmt: string)=>void})
+{
+    const [baseURL, setBaseURL] = useState(aiConfig.baseURL);
+    const [key, setKey] = useState(aiConfig.key);
+    const [model, setModel] = useState(aiConfig.model);
+    const [tptr, setTptr] = useState(aiConfig.temperature);
+    const [tkMode, setTkMode] = useState(aiConfig.thinkingControl);
+    const [sysPrompt, setSysPrompt] = useState(prompt);
+    useEffect(()=>{
+        setBaseURL(aiConfig.baseURL);
+        setKey(aiConfig.key);
+        setModel(aiConfig.model);
+        setTptr(aiConfig.temperature);
+        setTkMode(aiConfig.thinkingControl);
+        setSysPrompt(prompt);
+    }, [aiConfig]);
+    useEffect(()=>{
+        onChange({baseURL, key, model, temperature: tptr, thinkingControl: tkMode})
+    },[baseURL, key, model, tptr, tkMode]);
+    useEffect(()=>{
+        onPmtChange(sysPrompt);
+    },[sysPrompt]);
 
-export function SetUI({config, setConfig, t}: {config: configType, setConfig: Dispatch<SetStateAction<configType>>, t: (key: string)=>string}){
-    
+    const isURL = (url: string): boolean => {
+        try {
+            new URL(url);
+            return true;
+        } catch (e) {return false;};
+    };
+
+    const [showKey, setShowKey] = useState(false);
+
+    return (<Field label={<Text weight='bold'>{label}</Text>} style={{gap: '8px'}}>
+        <Field label={<InfoLabel info={t('aiset_baseurl_tip')}>
+            <Text>{t('aiset_baseurl')}</Text>
+        </InfoLabel>} orientation='horizontal' validationMessage={isURL(baseURL) ? undefined : t('aiset_baseurl_warn')}>
+            <Input value={baseURL} onChange={(e,data)=>{setBaseURL(data.value)}} />
+        </Field>
+        <Field orientation='horizontal' label={t('aiset_key')}>
+            <Input type={showKey ? 'text' : 'password'} value={key} onChange={(e,data)=>{setKey(data.value)}} contentAfter={
+                <Tooltip content={t('aiset_key_tip')} relationship='description'>
+                    <Button appearance='transparent' onClick={()=>{setShowKey(!showKey)}}
+                        icon={showKey ? <EyeRegular /> : <EyeOffRegular />} />
+                </Tooltip>
+            } />
+        </Field>
+        <Field label={t('aiset_model')} orientation='horizontal'>
+            <Input value={model} onChange={(e,data)=>{setModel(data.value)}} />
+        </Field>
+        <Field label={<InfoLabel info={t('aiset_tptr_tip')}>
+            <Text>{t('aiset_tptr')} {tptr}</Text>
+        </InfoLabel>} orientation='horizontal'>
+            <Slider
+                value={tptr} onChange={(e,data)=>{setTptr(data.value)}}
+                min={0.00} max={1.00} step={0.05}
+            />
+        </Field>
+        <Field label={t('aiset_tkmode')} orientation='horizontal'>
+            <Dropdown value={tkMode} onOptionSelect={(e,data)=>{setTkMode(data.optionValue as "none" | "qwen3_no_think" | "gemini_low" | "gemini_none" | "oai_minimal" | "oai_low")}}>
+                <Option value='none'>{t('aiset_tkmode_1')}</Option>
+                <Option value='qwen3_no_think'>{t('aiset_tkmode_2')}</Option>
+                <Option value='gemini_low'>{t('aiset_tkmode_3')}</Option>
+                <Option value='gemini_none'>{t('aiset_tkmode_4')}</Option>
+                <Option value='oai_minimal'>{t('aiset_tkmode_5')}</Option>
+                <Option value='oai_low'>{t('aiset_tkmode_6')}</Option>
+            </Dropdown>
+        </Field>
+    </Field>);
+};
+
+export function SetUI({config, setConfig, t}: 
+    {config: configType, setConfig: Dispatch<SetStateAction<configType>>, t: (key: string)=>string})
+{
     // tabs
     const [tab, setTab] = useState('app');
 
@@ -84,7 +155,7 @@ export function SetUI({config, setConfig, t}: {config: configType, setConfig: Di
                             </Field>
                             <Field label={t('appset_port')} style={{gap: '8px'}}>
                                 <Field label={t('appset_import')} orientation='horizontal'>
-                                    <div style={{display: 'flex', flexDirection: 'row'}}>
+                                    <div style={{display: 'flex', flexDirection: 'row', gap: '4px'}}>
                                         <Input value={importing} onChange={(e,data)=>{setImporting(data.value)}}
                                             contentAfter={!isImportingValid ? (
                                                 <Tooltip content={t('appset_import_tip')} relationship="description">
@@ -101,7 +172,7 @@ export function SetUI({config, setConfig, t}: {config: configType, setConfig: Di
                                     </div>
                                 </Field>
                                 <Field label={t('appset_export')} orientation='horizontal'>
-                                    <Button onClick={()=>{
+                                    <Button icon={<CopyRegular />} onClick={()=>{
                                         navigator.clipboard.writeText(JSON.stringify(config));
                                         dispatchToast(<Toast><ToastTitle>
                                             {t('appset_export_success')}
@@ -111,9 +182,11 @@ export function SetUI({config, setConfig, t}: {config: configType, setConfig: Di
                             </Field>
                         </div>)}
                         {tab==='ai' && (<div>
-                            <Field label="titleAI">
-                                {/* TODO: */}
-                            </Field>
+                            <SetAI label={t('aiset_titlesai')} t={t} aiConfig={config.titlesAI} onChange={(v)=>{
+                                // TODO:
+                            }} prompt={config.prompts[config.lang].titles} onPmtChange={(v)=>{
+                                // TODO:
+                            }} />
                         </div>)}
                         {tab==='pfr' && (<div>Preferences</div>)}
                         {tab==='about' && (<div>About</div>)}
