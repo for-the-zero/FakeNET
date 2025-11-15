@@ -15,6 +15,8 @@
     "appset_export": "导出配置JSON",
     "appset_export_btn": "点击复制",
     "appset_export_success": "已复制到剪贴板",
+    "appset_reset": "重置",
+    "appset_reset_tip": "点击重置所有设置为默认值",
 
     "aiset": "AI设置",
     "aiset_titlesai": "用于生成标题的模型",
@@ -27,7 +29,7 @@
     "aiset_tptr": "Temperature: ",
     "aiset_tkmode": "思考控制",
     "aiset_pmt": "提示词",
-    "aiset_pmt_reset": "重置",
+    "aiset_pmt_reset": "重置系统提示词",
     "aiset_baseurl_tip": "请输入OpenAI格式的API端点，且不需要加上/chat/completions",
     "aiset_baseurl_warn": "这似乎不是一个url呢喵~",
     "aiset_key_tip": "显示/隐藏",
@@ -38,7 +40,7 @@
     "aiset_tkmode_4": "reasoning_effort设置为none (适用于Gemini官方API)",
     "aiset_tkmode_5": "reasoning中设置effort为minimal (适用于OpenAI官方等API)",
     "aiset_tkmode_6": "reasoning中设置effort为low (适用于OpenAI官方等API)",
-    "aiset_pmt_tip": "作为系统提示词使用，若曦要修改请按照默认提示词修改",
+    "aiset_pmt_tip": "作为系统提示词使用，若需要修改建议按照默认提示词修改",
 
     "pfrset": "偏好设置",
     "about": "关于"

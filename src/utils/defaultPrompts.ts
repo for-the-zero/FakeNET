@@ -115,8 +115,7 @@ export const defaultPrompts = {
     ...
 ]
 \`\`\``,
-        titles: `
-# 角色
+        titles: `# 角色
 
 你是一个内嵌于AI虚拟社交平台上的智能推送助手，用于推送任意文本内容给用户
 

@@ -1,20 +1,23 @@
-import { useState, useEffect, useId, use } from 'react';
+import { useState, useEffect, useId } from 'react';
 import type { Dispatch, SetStateAction } from 'react';
 import {
     Button, Text, InfoLabel,
     Dialog, DialogTrigger, DialogSurface, DialogBody, DialogTitle, DialogContent,
     Tab, TabList,
-    Field, Radio, RadioGroup, Input, Slider, Dropdown, Option,
-    Tooltip, Toaster, Toast, useToastController, ToastTitle
+    Field, Radio, RadioGroup, Input, Slider, Dropdown, Option, Textarea,
+    Tooltip, Toaster, Toast, useToastController, ToastTitle,
+    Divider 
 } from '@fluentui/react-components';
 import {
-    SettingsRegular, Dismiss24Regular, SaveRegular, WarningRegular, CopyRegular, EyeRegular, EyeOffRegular
+    SettingsRegular, Dismiss24Regular, SaveRegular, WarningRegular, CopyRegular, EyeRegular, EyeOffRegular, ArrowResetRegular
 } from '@fluentui/react-icons';
 
 import { testImporting } from '../utils/testConfig';
+import { defaultConfig } from '../utils/defaultValues';
+import { defaultPrompts } from '../utils/defaultPrompts';
 
-function SetAI({label, aiConfig, onChange, t, prompt, onPmtChange}: 
-    {label: string, aiConfig: AIConfigType, onChange: (newConfig: AIConfigType)=>void, t: (key: string)=>string, prompt: string, onPmtChange: (newPmt: string)=>void})
+function SetAI({label, aiConfig, onChange, t, prompt, onPmtChange, onPmtRst}: 
+    {label: string, aiConfig: AIConfigType, onChange: (newConfig: AIConfigType)=>void, t: (key: string)=>string, prompt: string, onPmtChange: (newPmt: string)=>void, onPmtRst: ()=>void})
 {
     const [baseURL, setBaseURL] = useState(aiConfig.baseURL);
     const [key, setKey] = useState(aiConfig.key);
@@ -28,11 +31,13 @@ function SetAI({label, aiConfig, onChange, t, prompt, onPmtChange}:
         setModel(aiConfig.model);
         setTptr(aiConfig.temperature);
         setTkMode(aiConfig.thinkingControl);
-        setSysPrompt(prompt);
     }, [aiConfig]);
     useEffect(()=>{
         onChange({baseURL, key, model, temperature: tptr, thinkingControl: tkMode})
     },[baseURL, key, model, tptr, tkMode]);
+    useEffect(()=>{
+        setSysPrompt(prompt);
+    },[prompt]);
     useEffect(()=>{
         onPmtChange(sysPrompt);
     },[sysPrompt]);
@@ -81,6 +86,16 @@ function SetAI({label, aiConfig, onChange, t, prompt, onPmtChange}:
                 <Option value='oai_low'>{t('aiset_tkmode_6')}</Option>
             </Dropdown>
         </Field>
+        <Field label={<InfoLabel info={t('aiset_pmt_tip')}>{<Text weight='regular'>{t('aiset_pmt')}</Text>}</InfoLabel>} orientation='horizontal' size="small">
+            <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px'}}>
+                <Textarea style={{flex: 1, width: '100%'}} resize='vertical' 
+                    value={sysPrompt} onChange={(e,data)=>{setSysPrompt(data.value)}}
+                />
+                <Tooltip content={t('aiset_pmt_reset')} relationship='description'> 
+                    <Button appearance='subtle' icon={<ArrowResetRegular />} onClick={onPmtRst} />    
+                </Tooltip>
+            </div>
+        </Field>
     </Field>);
 };
 
@@ -97,7 +112,8 @@ export function SetUI({config, setConfig, t}:
             setIsNotNarSc(window.innerWidth > 600);
         };
         window.addEventListener('resize', handleResize);
-    });
+        return ()=>{window.removeEventListener('resize', handleResize)};
+    }, []);
 
     // import
     const [importing, setImporting] = useState('');
@@ -136,7 +152,7 @@ export function SetUI({config, setConfig, t}:
                     </TabList>
                     <div> 
                         {tab==='app' && (<div>
-                            <Field label="语言 / Language">
+                            <Field label={<Text weight='bold'>{"语言 / Language"}</Text>}>
                                 <RadioGroup layout='horizontal' value={config.lang} onChange={(e,data)=>{
                                     setConfig({...config, lang: data.value as 'zh-CN' | 'en'});
                                 }}>
@@ -144,7 +160,7 @@ export function SetUI({config, setConfig, t}:
                                     <Radio value='en' label='English' />
                                 </RadioGroup>
                             </Field>
-                            <Field label={t('appset_theme')}>
+                            <Field label={<Text weight='bold'>{t('appset_theme')}</Text>}>
                                 <RadioGroup layout='horizontal' value={config.theme} onChange={(e,data)=>{
                                     setConfig({...config, theme: data.value as 'light' | 'dark' | 'auto'});
                                 }}>
@@ -153,7 +169,7 @@ export function SetUI({config, setConfig, t}:
                                     <Radio value='dark' label={t('appset_theme_dark')} />
                                 </RadioGroup>
                             </Field>
-                            <Field label={t('appset_port')} style={{gap: '8px'}}>
+                            <Field label={<Text weight='bold'>{t('appset_port')}</Text>} style={{gap: '8px'}}>
                                 <Field label={t('appset_import')} orientation='horizontal'>
                                     <div style={{display: 'flex', flexDirection: 'row', gap: '4px'}}>
                                         <Input value={importing} onChange={(e,data)=>{setImporting(data.value)}}
@@ -180,13 +196,29 @@ export function SetUI({config, setConfig, t}:
                                     }}><Text weight='regular'>{t('appset_export_btn')}</Text></Button>
                                 </Field>
                             </Field>
+                            <Field label={<Text weight='bold'>{t('appset_reset')}</Text>} >
+                                <Button icon={<ArrowResetRegular />} onClick={()=>{
+                                    setConfig(defaultConfig);
+                                }}><Text weight='regular'>{t('appset_reset_tip')}</Text></Button>
+                            </Field>
                         </div>)}
                         {tab==='ai' && (<div>
                             <SetAI label={t('aiset_titlesai')} t={t} aiConfig={config.titlesAI} onChange={(v)=>{
-                                // TODO:
+                                setConfig({...config, titlesAI: v});
                             }} prompt={config.prompts[config.lang].titles} onPmtChange={(v)=>{
-                                // TODO:
+                                setConfig({...config, prompts: {...config.prompts, [config.lang]: {...config.prompts[config.lang], titles: v}}})
+                            }} onPmtRst={()=>{
+                                setConfig({...config, prompts: {...config.prompts, [config.lang]: {...config.prompts[config.lang], titles: defaultConfig.prompts[config.lang].titles}}})
                             }} />
+                            <Divider style={{marginTop: '8px', marginBottom: '8px'}} />
+                            <SetAI label={t('aiset_articleai')} t={t} aiConfig={config.articleAI} onChange={(v)=>{
+                                setConfig({...config, articleAI: v});
+                            }} prompt={config.prompts[config.lang].article} onPmtChange={(v)=>{
+                                setConfig({...config, prompts: {...config.prompts, [config.lang]: {...config.prompts[config.lang], article: v}}})
+                            }} onPmtRst={()=>{
+                                setConfig({...config, prompts: {...config.prompts, [config.lang]: {...config.prompts[config.lang], article: defaultConfig.prompts[config.lang].article}}})
+                            }} />
+                            {/* TODO: */}
                         </div>)}
                         {tab==='pfr' && (<div>Preferences</div>)}
                         {tab==='about' && (<div>About</div>)}
