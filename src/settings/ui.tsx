@@ -14,33 +14,11 @@ import {
 
 import { testImporting } from '../utils/testConfig';
 import { defaultConfig } from '../utils/defaultValues';
-import { defaultPrompts } from '../utils/defaultPrompts';
 
 function SetAI({label, aiConfig, onChange, t, prompt, onPmtChange, onPmtRst}: 
     {label: string, aiConfig: AIConfigType, onChange: (newConfig: AIConfigType)=>void, t: (key: string)=>string, prompt: string, onPmtChange: (newPmt: string)=>void, onPmtRst: ()=>void})
 {
-    const [baseURL, setBaseURL] = useState(aiConfig.baseURL);
-    const [key, setKey] = useState(aiConfig.key);
-    const [model, setModel] = useState(aiConfig.model);
-    const [tptr, setTptr] = useState(aiConfig.temperature);
-    const [tkMode, setTkMode] = useState(aiConfig.thinkingControl);
-    const [sysPrompt, setSysPrompt] = useState(prompt);
-    useEffect(()=>{
-        setBaseURL(aiConfig.baseURL);
-        setKey(aiConfig.key);
-        setModel(aiConfig.model);
-        setTptr(aiConfig.temperature);
-        setTkMode(aiConfig.thinkingControl);
-    }, [aiConfig]);
-    useEffect(()=>{
-        onChange({baseURL, key, model, temperature: tptr, thinkingControl: tkMode})
-    },[baseURL, key, model, tptr, tkMode]);
-    useEffect(()=>{
-        setSysPrompt(prompt);
-    },[prompt]);
-    useEffect(()=>{
-        onPmtChange(sysPrompt);
-    },[sysPrompt]);
+    const [showKey, setShowKey] = useState(false);
 
     const isURL = (url: string): boolean => {
         try {
@@ -49,16 +27,18 @@ function SetAI({label, aiConfig, onChange, t, prompt, onPmtChange, onPmtRst}:
         } catch (e) {return false;};
     };
 
-    const [showKey, setShowKey] = useState(false);
-
     return (<Field label={<Text weight='bold'>{label}</Text>} style={{gap: '8px'}}>
         <Field label={<InfoLabel info={t('aiset_baseurl_tip')}>
             <Text>{t('aiset_baseurl')}</Text>
-        </InfoLabel>} orientation='horizontal' validationMessage={isURL(baseURL) ? undefined : t('aiset_baseurl_warn')}>
-            <Input value={baseURL} onChange={(e,data)=>{setBaseURL(data.value)}} />
+        </InfoLabel>} orientation='horizontal' validationMessage={isURL(aiConfig.baseURL) ? undefined : t('aiset_baseurl_warn')}>
+            <Input value={aiConfig.baseURL} onChange={(e,data)=>{
+                onChange({...aiConfig, baseURL: data.value})
+            }} />
         </Field>
         <Field orientation='horizontal' label={t('aiset_key')}>
-            <Input type={showKey ? 'text' : 'password'} value={key} onChange={(e,data)=>{setKey(data.value)}} contentAfter={
+            <Input type={showKey ? 'text' : 'password'} value={aiConfig.key} onChange={(e,data)=>{
+                onChange({...aiConfig, key: data.value})
+            }} contentAfter={
                 <Tooltip content={t('aiset_key_tip')} relationship='description'>
                     <Button appearance='transparent' onClick={()=>{setShowKey(!showKey)}}
                         icon={showKey ? <EyeRegular /> : <EyeOffRegular />} />
@@ -66,18 +46,24 @@ function SetAI({label, aiConfig, onChange, t, prompt, onPmtChange, onPmtRst}:
             } />
         </Field>
         <Field label={t('aiset_model')} orientation='horizontal'>
-            <Input value={model} onChange={(e,data)=>{setModel(data.value)}} />
+            <Input value={aiConfig.model} onChange={(e,data)=>{
+                onChange({...aiConfig, model: data.value})
+            }} />
         </Field>
         <Field label={<InfoLabel info={t('aiset_tptr_tip')}>
-            <Text>{t('aiset_tptr')} {tptr}</Text>
+            <Text>{t('aiset_tptr')} {aiConfig.temperature}</Text>
         </InfoLabel>} orientation='horizontal'>
             <Slider
-                value={tptr} onChange={(e,data)=>{setTptr(data.value)}}
+                value={aiConfig.temperature} onChange={(e,data)=>{
+                    onChange({...aiConfig, temperature: data.value})
+                }}
                 min={0.00} max={1.00} step={0.05}
             />
         </Field>
         <Field label={t('aiset_tkmode')} orientation='horizontal'>
-            <Dropdown value={tkMode} onOptionSelect={(e,data)=>{setTkMode(data.optionValue as "none" | "qwen3_no_think" | "gemini_low" | "gemini_none" | "oai_minimal" | "oai_low")}}>
+            <Dropdown value={aiConfig.thinkingControl} onOptionSelect={(e,data)=>{
+                onChange({...aiConfig, thinkingControl: data.optionValue as "none" | "qwen3_no_think" | "gemini_low" | "gemini_none" | "oai_minimal" | "oai_low"})
+            }}>
                 <Option value='none'>{t('aiset_tkmode_1')}</Option>
                 <Option value='qwen3_no_think'>{t('aiset_tkmode_2')}</Option>
                 <Option value='gemini_low'>{t('aiset_tkmode_3')}</Option>
@@ -89,7 +75,9 @@ function SetAI({label, aiConfig, onChange, t, prompt, onPmtChange, onPmtRst}:
         <Field label={<InfoLabel info={t('aiset_pmt_tip')}>{<Text weight='regular'>{t('aiset_pmt')}</Text>}</InfoLabel>} orientation='horizontal' size="small">
             <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px'}}>
                 <Textarea style={{flex: 1, width: '100%'}} resize='vertical' 
-                    value={sysPrompt} onChange={(e,data)=>{setSysPrompt(data.value)}}
+                    value={prompt} onChange={(e,data)=>{
+                        onPmtChange(data.value)
+                    }}
                 />
                 <Tooltip content={t('aiset_pmt_reset')} relationship='description'> 
                     <Button appearance='subtle' icon={<ArrowResetRegular />} onClick={onPmtRst} />    
@@ -218,7 +206,22 @@ export function SetUI({config, setConfig, t}:
                             }} onPmtRst={()=>{
                                 setConfig({...config, prompts: {...config.prompts, [config.lang]: {...config.prompts[config.lang], article: defaultConfig.prompts[config.lang].article}}})
                             }} />
-                            {/* TODO: */}
+                            <Divider style={{marginTop: '8px', marginBottom: '8px'}} />
+                            <SetAI label={t('aiset_commentsai')} t={t} aiConfig={config.commentsAI} onChange={(v)=>{
+                                setConfig({...config, commentsAI: v});
+                            }} prompt={config.prompts[config.lang].comments} onPmtChange={(v)=>{
+                                setConfig({...config, prompts: {...config.prompts, [config.lang]: {...config.prompts[config.lang], comments: v}}})
+                            }} onPmtRst={()=>{
+                                setConfig({...config, prompts: {...config.prompts, [config.lang]: {...config.prompts[config.lang], comments: defaultConfig.prompts[config.lang].comments}}})
+                            }} />
+                            <Divider style={{marginTop: '8px', marginBottom: '8px'}} />
+                            <SetAI label={t('aiset_analyzeai')} t={t} aiConfig={config.analyzeAI} onChange={(v)=>{
+                                setConfig({...config, analyzeAI: v});
+                            }} prompt={config.prompts[config.lang].analyze} onPmtChange={(v)=>{
+                                setConfig({...config, prompts: {...config.prompts, [config.lang]: {...config.prompts[config.lang], analyze: v}}})
+                            }} onPmtRst={()=>{
+                                setConfig({...config, prompts: {...config.prompts, [config.lang]: {...config.prompts[config.lang], analyze: defaultConfig.prompts[config.lang].analyze}}})
+                            }} />
                         </div>)}
                         {tab==='pfr' && (<div>Preferences</div>)}
                         {tab==='about' && (<div>About</div>)}
