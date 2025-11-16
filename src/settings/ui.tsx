@@ -27,7 +27,7 @@ function SetAI({label, aiConfig, onChange, t, prompt, onPmtChange, onPmtRst}:
         } catch (e) {return false;};
     };
 
-    return (<Field label={<Text weight='bold'>{label}</Text>} style={{gap: '8px'}}>
+    return (<Field label={<Text weight='bold' size={400}>{label}</Text>} style={{gap: '8px'}}>
         <Field label={<InfoLabel info={t('aiset_baseurl_tip')}>
             <Text>{t('aiset_baseurl')}</Text>
         </InfoLabel>} orientation='horizontal' validationMessage={isURL(aiConfig.baseURL) ? undefined : t('aiset_baseurl_warn')}>
@@ -87,6 +87,15 @@ function SetAI({label, aiConfig, onChange, t, prompt, onPmtChange, onPmtRst}:
     </Field>);
 };
 
+function SetPfr({label, pfrConfig, onChange, t}: 
+    {label: string, pfrConfig: string[], onChange: (newConfig: string[])=>void, t: (key: string)=>string})
+{
+    // TODO:
+    return (<Field label={<Text>{label}</Text>}>
+        {/* TODO: */}
+    </Field>);
+};
+
 export function SetUI({config, setConfig, t}: 
     {config: configType, setConfig: Dispatch<SetStateAction<configType>>, t: (key: string)=>string})
 {
@@ -138,7 +147,7 @@ export function SetUI({config, setConfig, t}:
                         <Tab value="pfr">{t('pfrset')}</Tab>
                         <Tab value="about">{t('about')}</Tab>
                     </TabList>
-                    <div> 
+                    <div style={{maxHeight: 'calc(100vh - 150px)', overflowY: 'auto', width: '100%', paddingRight: '16px'}}> 
                         {tab==='app' && (<div>
                             <Field label={<Text weight='bold'>{"语言 / Language"}</Text>}>
                                 <RadioGroup layout='horizontal' value={config.lang} onChange={(e,data)=>{
@@ -223,7 +232,14 @@ export function SetUI({config, setConfig, t}:
                                 setConfig({...config, prompts: {...config.prompts, [config.lang]: {...config.prompts[config.lang], analyze: defaultConfig.prompts[config.lang].analyze}}})
                             }} />
                         </div>)}
-                        {tab==='pfr' && (<div>Preferences</div>)}
+                        {tab==='pfr' && (<div>
+                            <Text>{t('pfrset_tip1')}</Text>
+                            <Divider style={{marginTop: '8px', marginBottom: '8px'}} />
+                            <SetPfr label={t('pfrset_article')} pfrConfig={config.preferences.article} t={t} onChange={(v)=>{
+                                // TODO:
+                            }} />
+                            {/* TODO: */}
+                        </div>)}
                         {tab==='about' && (<div>About</div>)}
                     </div>
                     <Toaster toasterId={toasterId} />

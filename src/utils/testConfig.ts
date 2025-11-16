@@ -17,6 +17,15 @@ const testAIType = (parsed: any): boolean | AIConfigType => {
     } else {return false;};
     return newConfig;
 };
+
+export const testPfr = (parsed: any): false | string[] => {
+    let newPfr = [] as string[];
+    if(parsed && Array.isArray(parsed) 
+        && (parsed.length == 0 || parsed.every((item: any)=>{return typeof item === 'string';}))
+    ){newPfr = parsed;} else {return false;};
+    return newPfr;
+};
+
 export const testImporting = (text: string): false | configType => {
     let parsed = '' as any;
     try{
@@ -27,7 +36,6 @@ export const testImporting = (text: string): false | configType => {
     if(!parsed || typeof parsed !== 'object'){return false;};
     let newConfig = {} as configType;
     newConfig.preferences = {
-        titles: [],
         article: [],
         comments: []
     };
@@ -94,14 +102,9 @@ export const testImporting = (text: string): false | configType => {
             } else {return false;};
         } else {return false;};
     } else {return false;};
-    if(parsed.preferences.titles && Array.isArray(parsed.preferences.titles) 
-        && (parsed.preferences.titles.length == 0 || parsed.preferences.titles.every((item: any)=>{return typeof item === 'string';}))
-    ){newConfig.preferences.titles = parsed.preferences.titles;} else {return false;};
-    if(parsed.preferences.article && Array.isArray(parsed.preferences.article) 
-        && (parsed.preferences.article.length == 0 || parsed.preferences.article.every((item: any)=>{return typeof item === 'string';}))
-    ){newConfig.preferences.article = parsed.preferences.article;} else {return false;};
-    if(parsed.preferences.comments && Array.isArray(parsed.preferences.comments) 
-        && (parsed.preferences.comments.length == 0 || parsed.preferences.comments.every((item: any)=>{return typeof item === 'string';}))
-    ){newConfig.preferences.comments = parsed.preferences.comments;} else {return false;};
+    let tempvar = testPfr(parsed.preferences.article);
+    if(tempvar !== false){newConfig.preferences.article = tempvar;} else {return false;}
+    tempvar = testPfr(parsed.preferences.comments);
+    if(tempvar !== false){newConfig.preferences.comments = tempvar;} else {return false;}
     return newConfig;
 };

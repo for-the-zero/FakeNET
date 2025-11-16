@@ -34,7 +34,6 @@ interface configType {
         }
     },
     preferences: {
-        titles: string[],
         article: string[],
         comments: string[]
     }

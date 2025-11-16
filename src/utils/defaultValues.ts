@@ -33,7 +33,6 @@ export const defaultConfig = {
     },
     prompts: defaultPrompts,
     preferences: {
-        titles: [],
         article: [],
         comments: []
     }

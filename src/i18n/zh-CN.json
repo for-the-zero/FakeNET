@@ -4,7 +4,7 @@
     "refresh": "刷新",
     "settings": "设置",
 
-    "appset": "应用设置",
+    "appset": "常规设置",
     "appset_theme": "深色模式",
     "appset_theme_auto": "自动",
     "appset_theme_light": "浅色",
@@ -18,7 +18,7 @@
     "appset_reset": "重置",
     "appset_reset_tip": "点击重置所有设置为默认值",
 
-    "aiset": "AI设置",
+    "aiset": "模型设置",
     "aiset_titlesai": "用于生成标题的模型",
     "aiset_articleai": "用于生成文章内容的模型",
     "aiset_commentsai": "用于生成评论的模型",
@@ -42,6 +42,14 @@
     "aiset_tkmode_6": "reasoning中设置effort为low (适用于OpenAI官方等API)",
     "aiset_pmt_tip": "作为系统提示词使用，若需要修改建议按照默认提示词修改",
 
-    "pfrset": "偏好设置",
-    "about": "关于"
+    "pfrset": "推送偏好",
+    "pfrset_article": "文章推送偏好",
+    "pfrset_comment": "评论显示偏好",
+    "pfrset_tip1": "请输入json数组，并且为string[]类型",
+    "pfrset_tip2": "输入数据格式错误",
+    "pfrset_save": "保存偏好",
+    "pfrset_save_success": "保存成功",
+
+
+    "about": "关于网页"
 }
