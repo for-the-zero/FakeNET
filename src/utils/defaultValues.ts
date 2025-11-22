@@ -1,4 +1,17 @@
-import { defaultPrompts } from "./defaultPrompts";
+export const defaultPrompts = {
+    "zh-CN": {
+        analyze: require("./prompts/zh-CN/analyze.ts"),
+        article: require("./prompts/zh-CN/article.ts"),
+        comments: require("./prompts/zh-CN/comments.ts"),
+        titles: require("./prompts/zh-CN/titles.ts")
+    },
+    "en": {
+        analyze: require("./prompts/en/analyze.ts"),
+        article: require("./prompts/en/article.ts"),
+        comments: require("./prompts/en/comments.ts"),
+        titles: require("./prompts/en/titles.ts")
+    }
+};
 
 export const defaultConfig = {
     theme: "auto",

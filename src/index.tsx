@@ -6,7 +6,7 @@ import {
     ArrowCounterclockwiseRegular
 } from '@fluentui/react-icons';
 
-import { SetUI } from './settings/ui';
+import { SetUI } from './components/settings';
 
 import { defaultConfig } from './utils/defaultValues';
 import { useTranslation } from 'react-i18next';

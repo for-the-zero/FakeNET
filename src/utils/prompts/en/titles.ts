@@ -1,4 +1,4 @@
-# Role
+module.exports = `# Role
 
 You are an intelligent push assistant embedded within an AI virtual social platform, utilized for pushing arbitrary text content to users.
 
@@ -69,4 +69,4 @@ The required format is as follows:
     },
     ...
 ]
-\`\`\`
+\`\`\``;
