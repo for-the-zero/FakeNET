@@ -1,11 +1,11 @@
-import { useState, useEffect, useId } from 'react';
+import { useState, useEffect, memo } from 'react';
 import type { Dispatch, SetStateAction } from 'react';
 import {
     Button, Text, InfoLabel,
     Dialog, DialogTrigger, DialogSurface, DialogBody, DialogTitle, DialogContent,
     Tab, TabList,
     Field, Radio, RadioGroup, Input, Slider, Dropdown, Option, Textarea,
-    Tooltip, Toaster, Toast, useToastController, ToastTitle,
+    Tooltip, Toast, ToastTitle,
     Divider 
 } from '@fluentui/react-components';
 import {
@@ -15,7 +15,7 @@ import {
 import { testImporting } from '../utils/testConfig';
 import { defaultConfig } from '../utils/defaultValues';
 
-function SetAI({label, aiConfig, onChange, t, prompt, onPmtChange, onPmtRst}: 
+const SetAI = memo(function({label, aiConfig, onChange, t, prompt, onPmtChange, onPmtRst}: 
     {label: string, aiConfig: AIConfigType, onChange: (newConfig: AIConfigType)=>void, t: (key: string)=>string, prompt: string, onPmtChange: (newPmt: string)=>void, onPmtRst: ()=>void})
 {
     const [showKey, setShowKey] = useState(false);
@@ -85,32 +85,22 @@ function SetAI({label, aiConfig, onChange, t, prompt, onPmtChange, onPmtRst}:
             </div>
         </Field>
     </Field>);
-};
+});
 
-function SetPfr({label, pfrConfig, onChange, t}: 
+const SetPfr = memo(function({label, pfrConfig, onChange, t}: 
     {label: string, pfrConfig: string[], onChange: (newConfig: string[])=>void, t: (key: string)=>string})
 {
     // TODO:
-    return (<Field label={<Text>{label}</Text>}>
+    return (<Field label={<Text weight='bold'>{label}</Text>}>
         {/* TODO: */}
     </Field>);
-};
+});
 
-export function SetUI({config, setConfig, t}: 
-    {config: configType, setConfig: Dispatch<SetStateAction<configType>>, t: (key: string)=>string})
+export const SetUI = memo(function({config, setConfig, t, isNotNarSc, dispatchToast}: 
+    {config: configType, setConfig: Dispatch<SetStateAction<configType>>, t: (key: string)=>string, isNotNarSc: boolean, dispatchToast: any})
 {
     // tabs
     const [tab, setTab] = useState('app');
-
-    // flexible
-    const [isNotNarSc, setIsNotNarSc] = useState(window.innerWidth > 600);
-    useEffect(()=>{
-        const handleResize = () => {
-            setIsNotNarSc(window.innerWidth > 600);
-        };
-        window.addEventListener('resize', handleResize);
-        return ()=>{window.removeEventListener('resize', handleResize)};
-    }, []);
 
     // import
     const [importing, setImporting] = useState('');
@@ -119,11 +109,6 @@ export function SetUI({config, setConfig, t}:
         if(testImporting(importing)){setIsImportingValid(true);
         }else{setIsImportingValid(false);};
     }, [importing]);
-
-    // toast
-    const toasterId = useId();
-    const { dispatchToast } = useToastController(toasterId);
-    
 
     return (<Dialog>
         <DialogTrigger disableButtonEnhancement>
@@ -147,7 +132,10 @@ export function SetUI({config, setConfig, t}:
                         <Tab value="pfr">{t('pfrset')}</Tab>
                         <Tab value="about">{t('about')}</Tab>
                     </TabList>
-                    <div style={{maxHeight: 'calc(100vh - 150px)', overflowY: 'auto', width: '100%', paddingRight: '16px'}}> 
+                    <div style={{
+                        maxHeight: 'calc(100vh - 150px)', overflowY: 'auto',
+                        width: '100%', paddingRight: '16px'
+                    }}> 
                         {tab==='app' && (<div>
                             <Field label={<Text weight='bold'>{"语言 / Language"}</Text>}>
                                 <RadioGroup layout='horizontal' value={config.lang} onChange={(e,data)=>{
@@ -242,9 +230,8 @@ export function SetUI({config, setConfig, t}:
                         </div>)}
                         {tab==='about' && (<div>About</div>)}
                     </div>
-                    <Toaster toasterId={toasterId} />
                 </DialogContent>
             </DialogBody>
         </DialogSurface>
     </Dialog>)
-};
+});

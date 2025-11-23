@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useId } from 'react';
 import { FluentProvider, webLightTheme, webDarkTheme,
-    Button, Title3, Text
+    Button, Title3, Text, 
+    Toaster, useToastController
 } from '@fluentui/react-components';
 import { 
     ArrowCounterclockwiseRegular
@@ -12,6 +13,9 @@ import { defaultConfig } from './utils/defaultValues';
 import { useTranslation } from 'react-i18next';
 
 export function App(){
+    // toast
+    const toasterId = useId();
+    const { dispatchToast } = useToastController(toasterId);
 
     // config
     const [isConfigLoaded, setIsConfigLoaded] = useState(false);
@@ -71,6 +75,16 @@ export function App(){
         };
     }, [config.lang, isConfigLoaded, i18n]);
 
+    // flexible
+    const [isNotNarSc, setIsNotNarSc] = useState(window.innerWidth > 600);
+    useEffect(()=>{
+        const handleResize = () => {
+            setIsNotNarSc(window.innerWidth > 600);
+        };
+        window.addEventListener('resize', handleResize);
+        return ()=>{window.removeEventListener('resize', handleResize)};
+    }, []);
+
 
     // main
     return (
@@ -87,7 +101,7 @@ export function App(){
             }}>
                 <Title3>{t('title')}</Title3>
                 <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px'}}>
-                    <SetUI config={config} setConfig={setConfig} t={t} />
+                    <SetUI config={config} setConfig={setConfig} t={t} isNotNarSc={isNotNarSc} dispatchToast={dispatchToast} />
                     <Button appearance="primary" icon={<ArrowCounterclockwiseRegular />}>
                         <Text weight="regular">
                             {t('refresh')}
@@ -95,6 +109,7 @@ export function App(){
                     </Button>
                 </div>
             </div>
+            <Toaster toasterId={toasterId} />
         </FluentProvider>
     );
 };
