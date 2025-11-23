@@ -50,3 +50,8 @@ export const defaultConfig = {
         comments: []
     }
 } as configType;
+
+export const defaultFeeds = {
+    analyzed: true,
+    feeds: null,
+} as feedsType;

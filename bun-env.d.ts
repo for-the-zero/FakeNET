@@ -38,3 +38,18 @@ interface configType {
         comments: string[]
     }
 };
+
+//====================================
+
+interface feedsType {
+    analyzed: boolean,
+    feeds: feedType[] | null;
+};
+
+interface feedType {
+    title: string,
+    overview: string,
+    author: string,
+    article: string | null,
+    comments: {username: string, content: string}[] | null,
+};

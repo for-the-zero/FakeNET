@@ -10,7 +10,7 @@ import {
 import { SetUI } from './components/settings';
 import { ArticleTitle } from './components/atcCard';
 
-import { defaultConfig } from './utils/defaultValues';
+import { defaultConfig, defaultFeeds } from './utils/defaultValues';
 import { useTranslation } from 'react-i18next';
 
 export function App(){
@@ -20,7 +20,7 @@ export function App(){
 
     // config
     const [isConfigLoaded, setIsConfigLoaded] = useState(false);
-    const [config, setConfig] = useState(defaultConfig);
+    const [config, setConfig] = useState<configType>(defaultConfig);
     useEffect(() => {
         let ls = localStorage.getItem('fakenet');
         if(ls){
@@ -86,6 +86,41 @@ export function App(){
         return ()=>{window.removeEventListener('resize', handleResize)};
     }, []);
 
+    // feed
+    const [feeds, setFeeds] = useState<feedsType>(defaultFeeds);
+    useEffect(() => {
+        let ls = localStorage.getItem('fakenet_feeds');
+        if(ls){
+            let lsParsed = JSON.parse(ls) as feedsType;
+            if(lsParsed){
+                setFeeds(lsParsed);
+            }else{
+                localStorage.removeItem('fakenet_feeds');
+                localStorage.setItem('fakenet_feeds', JSON.stringify(defaultFeeds))
+            };
+        } else {
+            localStorage.setItem('fakenet_feeds', JSON.stringify(defaultFeeds));
+        };
+    });
+    useEffect(() => {
+        localStorage.setItem('fakenet_feeds', JSON.stringify(feeds));
+    }, [feeds]);
+
+    // refresh
+    const refreshFeed = () => {
+        if(config.analyzeAI.baseURL === '' || config.analyzeAI.model === ''){
+            //TODO: 跳过
+        } else {
+            //TODO:
+        };
+        if(config.titlesAI.baseURL === '' || config.titlesAI.model === ''){
+            //TODO: 跳过
+        } else {
+            //TODO:
+        };
+        //TODO:
+    };
+
 
     // main
     return (
@@ -103,7 +138,7 @@ export function App(){
                 <Title3>{t('title')}</Title3>
                 <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px'}}>
                     <SetUI config={config} setConfig={setConfig} t={t} isNotNarSc={isNotNarSc} dispatchToast={dispatchToast} />
-                    <Button appearance="primary" icon={<ArrowCounterclockwiseRegular />}>
+                    <Button appearance="primary" icon={<ArrowCounterclockwiseRegular />} onClick={refreshFeed}>
                         <Text weight="regular">
                             {t('refresh')}
                         </Text>
@@ -118,14 +153,19 @@ export function App(){
                 boxSizing: 'border-box',
                 width: 'calc(100%-32px)'
             }}>
-                <ArticleTitle 
-                    title='title'
-                    author='author'
-                    overview='lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
-                    onClick={()=>{
-                        // TODO:
-                    }}
-                />
+                {feeds.feeds === null ? (<div>
+                    <Text>{t('empty_feed')}</Text>
+                </div>) : (feeds.feeds.map((feed, index) => (
+                    <ArticleTitle 
+                        key={index}
+                        title={feed.title}
+                        author={feed.author}
+                        overview={feed.overview}
+                        onClick={()=>{
+                            //TODO:
+                        }}
+                    />
+                )))}
             </div>
             <Toaster toasterId={toasterId} />
         </FluentProvider>
