@@ -1,13 +1,14 @@
 import { useState, useEffect, useId } from 'react';
 import { FluentProvider, webLightTheme, webDarkTheme,
-    Button, Title3, Text, 
-    Toaster, useToastController
+    Button, Title3, Text,
+    Toaster, useToastController,
 } from '@fluentui/react-components';
 import { 
     ArrowCounterclockwiseRegular
 } from '@fluentui/react-icons';
 
 import { SetUI } from './components/settings';
+import { ArticleTitle } from './components/atcCard';
 
 import { defaultConfig } from './utils/defaultValues';
 import { useTranslation } from 'react-i18next';
@@ -91,7 +92,7 @@ export function App(){
         <FluentProvider
             theme={isDark ? webDarkTheme : webLightTheme}
             style={{
-                width: '100%', height: '100%', padding: '1rem',
+                width: '100vw', minHeight: '100%', padding: '1rem', boxSizing: 'border-box',
                 display: 'flex', flexDirection: 'column', alignItems: 'center'
             }}
         >
@@ -108,6 +109,23 @@ export function App(){
                         </Text>
                     </Button>
                 </div>
+            </div>
+            <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '16px',
+                margin: '16px',
+                boxSizing: 'border-box',
+                width: 'calc(100%-32px)'
+            }}>
+                <ArticleTitle 
+                    title='title'
+                    author='author'
+                    overview='lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
+                    onClick={()=>{
+                        // TODO:
+                    }}
+                />
             </div>
             <Toaster toasterId={toasterId} />
         </FluentProvider>

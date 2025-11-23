@@ -9,7 +9,9 @@
   },
   "dependencies": {
     "@fluentui/react-components": "^9.72.2",
+    "@types/jdenticon": "^2.2.0",
     "i18next": "^25.6.0",
+    "jdenticon": "^3.3.0",
     "react": "^19",
     "react-dom": "^19",
     "react-i18next": "^16.2.3"
