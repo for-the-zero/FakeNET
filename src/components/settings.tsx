@@ -6,11 +6,15 @@ import {
     Tab, TabList,
     Field, Radio, RadioGroup, Input, Slider, Dropdown, Option, Textarea,
     Tooltip, Toast, ToastTitle,
-    Divider 
+    Divider,
+    Image,
+    Title1, Body1
 } from '@fluentui/react-components';
 import {
-    SettingsRegular, Dismiss24Regular, SaveRegular, WarningRegular, CopyRegular, EyeRegular, EyeOffRegular, ArrowResetRegular, DeleteRegular
+    SettingsRegular, Dismiss24Regular, SaveRegular, WarningRegular, CopyRegular, EyeRegular, EyeOffRegular, ArrowResetRegular, DeleteRegular,
+    HomePersonRegular, FluentRegular
 } from '@fluentui/react-icons';
+import { GithubIcon } from './extraIcons';
 
 import { testImporting, testPfr } from '../utils/testConfig';
 import { defaultConfig } from '../utils/defaultValues';
@@ -277,8 +281,43 @@ export const SetUI = memo(function({config, setConfig, t, isNotNarSc, dispatchTo
                                 setConfig({...config, preferences: {...config.preferences, comments: v}});
                             }} />
                         </div>)}
-                        {tab==='about' && (<div>
-                            {/* TODO: */}
+                        {tab==='about' && (<div style={{
+                            display: 'flex', flexDirection: 'column', 
+                            alignItems: 'center', justifyContent: 'center'
+                        }}>
+                            <div style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                gap: '8px'
+                            }}>
+                                <Image src={require('../assets/favicon.svg')} height={100} />
+                                <Title1>FakeNET</Title1>
+                            </div>
+                            <Body1>{t('about_t1')}</Body1>
+                            <div style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                gap: '4px',
+                                marginTop: '8px'
+                            }}>
+                                <Tooltip content={t('about_gh')} relationship='description' withArrow={true} positioning='below'>
+                                    <Button icon={<GithubIcon />} onClick={()=>{
+                                        window.open('https://github.com/for-the-zero/FakeNET');
+                                    }} />
+                                </Tooltip>
+                                <Tooltip content={t('about_me')} relationship='description' withArrow={true} positioning='below'>
+                                    <Button icon={<HomePersonRegular />} onClick={()=>{
+                                        window.open('https://ftz.is-a.dev/');
+                                    }} />
+                                </Tooltip>
+                                <Tooltip content={t('about_uic')} relationship='description' withArrow={true} positioning='below'>
+                                    <Button icon={<FluentRegular />} onClick={()=>{
+                                        window.open('https://storybooks.fluentui.dev/react/?path=/docs/concepts-introduction--docs')
+                                    }}/>
+                                </Tooltip>
+                            </div>
                         </div>)}
                     </div>
                 </DialogContent>

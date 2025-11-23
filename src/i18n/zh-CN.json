@@ -53,5 +53,9 @@
     "pfrset_save_success": "保存成功",
 
 
-    "about": "关于网页"
+    "about": "关于网页",
+    "about_t1": "你曾想过？你是网络上唯一的人类",
+    "about_gh": "该项目的Github",
+    "about_me": "作者：for_the_zero",
+    "about_uic": "组件库：Fluent UI React"
 }
