@@ -1,5 +1,5 @@
 import { useState, useEffect, memo } from 'react';
-import type { Dispatch, SetStateAction } from 'react';
+import type { Dispatch, SetStateAction, ReactNode } from 'react';
 import {
     Button, Text, InfoLabel,
     Dialog, DialogTrigger, DialogSurface, DialogBody, DialogTitle, DialogContent,
@@ -9,10 +9,10 @@ import {
     Divider 
 } from '@fluentui/react-components';
 import {
-    SettingsRegular, Dismiss24Regular, SaveRegular, WarningRegular, CopyRegular, EyeRegular, EyeOffRegular, ArrowResetRegular
+    SettingsRegular, Dismiss24Regular, SaveRegular, WarningRegular, CopyRegular, EyeRegular, EyeOffRegular, ArrowResetRegular, DeleteRegular
 } from '@fluentui/react-icons';
 
-import { testImporting } from '../utils/testConfig';
+import { testImporting, testPfr } from '../utils/testConfig';
 import { defaultConfig } from '../utils/defaultValues';
 
 const SetAI = memo(function({label, aiConfig, onChange, t, prompt, onPmtChange, onPmtRst}: 
@@ -87,17 +87,64 @@ const SetAI = memo(function({label, aiConfig, onChange, t, prompt, onPmtChange, 
     </Field>);
 });
 
-const SetPfr = memo(function({label, pfrConfig, onChange, t}: 
-    {label: string, pfrConfig: string[], onChange: (newConfig: string[])=>void, t: (key: string)=>string})
+const SetPfr = memo(function({label, pfrConfig, onChange, t, dispatchToast}: 
+    {label: string, pfrConfig: string[], onChange: (newConfig: string[])=>void, t: (key: string)=>string, dispatchToast: (content: ReactNode, options?: any)=>void})
 {
-    // TODO:
-    return (<Field label={<Text weight='bold'>{label}</Text>}>
-        {/* TODO: */}
+    const [input , setInput] = useState('[]');
+    const [isValid, setIsValid] = useState(true);
+    useEffect(()=>{
+        setInput(JSON.stringify(pfrConfig));
+    }, [pfrConfig]);
+    useEffect(()=>{
+        let parsed: any;
+        try{
+            parsed = JSON.parse(input);
+            if(testPfr(parsed)){
+                setIsValid(true);
+            } else {
+                setIsValid(false);
+            };
+        } catch(e) {
+            setIsValid(false);
+        };
+    }, [input]);
+    
+    return (<Field size='small'
+        label={<Text weight='bold' size={400}>{label}</Text>} 
+        validationMessage={isValid ? undefined : t('pfrset_tip2')}
+        style={{display: 'flex', flexDirection: 'column', gap: '8px'}}
+    >
+        <div style={{display: 'flex', flexDirection: 'row', gap: '8px'}}>
+            <Tooltip content={t('pfrset_reset')} relationship='description'>
+                <Button icon={<ArrowResetRegular />} onClick={()=>{
+                    setInput(JSON.stringify(pfrConfig));
+                }} />
+            </Tooltip>
+            <Tooltip content={t('pfrset_clear')} relationship='description'>
+                <Button icon={<DeleteRegular />} onClick={()=>{
+                    setInput('[]');
+                }} />
+            </Tooltip>
+            <Button icon={<SaveRegular />} appearance='primary' 
+                disabled={!isValid || input === JSON.stringify(pfrConfig)} 
+                onClick={()=>{
+                    onChange(testPfr(JSON.parse(input)) as string[]);
+                    dispatchToast(<Toast><ToastTitle>
+                        {t('pfrset_save_success')}
+                    </ToastTitle></Toast>,{intent:'success'});
+                }}
+            >
+                <Text weight='regular'>{t('pfrset_save')}</Text>
+            </Button>
+        </div>
+        <Textarea value={input} onChange={(e,data)=>{
+            setInput(data.value);
+        }} resize='vertical' />
     </Field>);
 });
 
 export const SetUI = memo(function({config, setConfig, t, isNotNarSc, dispatchToast}: 
-    {config: configType, setConfig: Dispatch<SetStateAction<configType>>, t: (key: string)=>string, isNotNarSc: boolean, dispatchToast: any})
+    {config: configType, setConfig: Dispatch<SetStateAction<configType>>, t: (key: string)=>string, isNotNarSc: boolean, dispatchToast: (content: ReactNode, options?: any)=>void})
 {
     // tabs
     const [tab, setTab] = useState('app');
@@ -220,15 +267,19 @@ export const SetUI = memo(function({config, setConfig, t, isNotNarSc, dispatchTo
                                 setConfig({...config, prompts: {...config.prompts, [config.lang]: {...config.prompts[config.lang], analyze: defaultConfig.prompts[config.lang].analyze}}})
                             }} />
                         </div>)}
-                        {tab==='pfr' && (<div>
+                        {tab==='pfr' && (<div style={{display: 'flex', flexDirection: 'column', gap: '8px'}}>
                             <Text>{t('pfrset_tip1')}</Text>
-                            <Divider style={{marginTop: '8px', marginBottom: '8px'}} />
-                            <SetPfr label={t('pfrset_article')} pfrConfig={config.preferences.article} t={t} onChange={(v)=>{
-                                // TODO:
+                            <Divider />
+                            <SetPfr label={t('pfrset_article')} pfrConfig={config.preferences.article} t={t} dispatchToast={dispatchToast} onChange={(v)=>{
+                                setConfig({...config, preferences: {...config.preferences, article: v}});
                             }} />
+                            <SetPfr label={t('pfrset_comment')} pfrConfig={config.preferences.comments} t={t} dispatchToast={dispatchToast} onChange={(v)=>{
+                                setConfig({...config, preferences: {...config.preferences, comments: v}});
+                            }} />
+                        </div>)}
+                        {tab==='about' && (<div>
                             {/* TODO: */}
                         </div>)}
-                        {tab==='about' && (<div>About</div>)}
                     </div>
                 </DialogContent>
             </DialogBody>

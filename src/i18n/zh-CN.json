@@ -44,10 +44,12 @@
 
     "pfrset": "推送偏好",
     "pfrset_article": "文章推送偏好",
-    "pfrset_comment": "评论显示偏好",
+    "pfrset_comment": "评论推送偏好",
     "pfrset_tip1": "请输入json数组，并且为string[]类型",
     "pfrset_tip2": "输入数据格式错误",
-    "pfrset_save": "保存偏好",
+    "pfrset_reset": "重置为当前状态",
+    "pfrset_clear": "清空为空数组",
+    "pfrset_save": "保存",
     "pfrset_save_success": "保存成功",
 
 
