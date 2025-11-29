@@ -16,6 +16,7 @@ export async function reqAI(ai: AIConfigType, prompts: {sys: string, user: strin
     };
 
     try {
+        // request
         let response = await fetch(ai.baseURL + '/chat/completions', {
             method: 'POST',
             headers: {

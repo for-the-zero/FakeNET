@@ -12,6 +12,11 @@ type thinkingControl = 'none'
     | 'oai_minimal'     // CloseAI "reasoning": {"effort": 'minimal'}
     | 'oai_low';        // CloseAI "reasoning": {"effort": 'low'}
 
+interface prefType {
+    article: string[],
+    comments: string[]
+};
+
 interface configType {
     theme: 'auto' | 'light' | 'dark',
     lang: 'zh-CN' | 'en',
@@ -33,10 +38,7 @@ interface configType {
             comments: string
         }
     },
-    preferences: {
-        article: string[],
-        comments: string[]
-    }
+    preferences: prefType
 };
 
 //====================================
