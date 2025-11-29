@@ -3,7 +3,7 @@ export function crtUsrAnalyze(lang: string, feeds: feedsType): string{
     return '';
 };
 
-export function crtUsrComment(lang: string, title: string, comment: {username: string, content: string}[], pfr: {article: string[], comments: string[]}): string{
+export function crtUsrComment(lang: string, title: string, comment: commentType, pfr: {article: string[], comments: string[]}): string{
     //TODO:
     return '';
 };

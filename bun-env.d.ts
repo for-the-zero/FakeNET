@@ -51,5 +51,12 @@ interface feedType {
     overview: string,
     author: string,
     article: string | null,
-    comments: {username: string, content: string}[] | null,
+    like: -1 | 0 | 1,
+    comments: commentType[] | null,
+};
+
+interface commentType {
+    username: string,
+    content: string,
+    like: -1 | 0 | 1
 };

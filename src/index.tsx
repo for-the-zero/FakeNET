@@ -101,7 +101,7 @@ export function App(){
         } else {
             localStorage.setItem('fakenet_feeds', JSON.stringify(defaultFeeds));
         };
-    });
+    }, []);
     useEffect(() => {
         localStorage.setItem('fakenet_feeds', JSON.stringify(feeds));
     }, [feeds]);
