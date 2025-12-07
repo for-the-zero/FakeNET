@@ -9,6 +9,7 @@ import {
 
 import { SetUI } from './components/settings';
 import { ArticleTitle } from './components/atcCard';
+import { AtcDrawer } from './components/atc';
 
 import { defaultConfig, defaultFeeds } from './utils/defaultValues';
 import { useTranslation } from 'react-i18next';
@@ -151,7 +152,8 @@ export function App(){
                 gap: '16px',
                 margin: '16px',
                 boxSizing: 'border-box',
-                width: 'calc(100%-32px)'
+                width: 'calc(100% - 32px)',
+                alignItems: 'center'
             }}>
                 {feeds.feeds === null ? (<div>
                     <Text>{t('empty_feed')}</Text>
@@ -166,6 +168,10 @@ export function App(){
                         }}
                     />
                 )))}
+
+                {/* TODO:测试，一会删 */}
+                <AtcDrawer feeds={{feeds: [{title: 'test', author: 'test', overview: 'test', article: null, like: 0, comments: null}], analyzed: true}} feedIndex={0} config={config} onClose={()=>{}} />
+
             </div>
             <Toaster toasterId={toasterId} />
         </FluentProvider>

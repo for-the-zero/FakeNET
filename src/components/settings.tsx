@@ -12,7 +12,7 @@ import {
 } from '@fluentui/react-components';
 import {
     SettingsRegular, Dismiss24Regular, SaveRegular, WarningRegular, CopyRegular, EyeRegular, EyeOffRegular, ArrowResetRegular, DeleteRegular,
-    HomePersonRegular, FluentRegular
+    HomePersonRegular, FluentRegular, CollectionsEmptyRegular
 } from '@fluentui/react-icons';
 
 import { testImporting, testPfr } from '../utils/testConfig';
@@ -316,6 +316,11 @@ export const SetUI = memo(function({config, setConfig, t, isNotNarSc, dispatchTo
                                 <Tooltip content={t('about_uic')} relationship='description' withArrow={true} positioning='below'>
                                     <Button icon={<FluentRegular />} onClick={()=>{
                                         window.open('https://storybooks.fluentui.dev/react/?path=/docs/concepts-introduction--docs')
+                                    }}/>
+                                </Tooltip>
+                                <Tooltip content={'Free-LLM-Collection'} relationship='description' withArrow={true} positioning='below'>
+                                    <Button icon={<CollectionsEmptyRegular />} onClick={()=>{
+                                        window.open('https://github.com/for-the-zero/Free-LLM-Collection')
                                     }}/>
                                 </Tooltip>
                             </div>
