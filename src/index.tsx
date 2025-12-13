@@ -200,7 +200,7 @@ export function App(){
 
                 <AtcDrawer feeds={feeds} setFeeds={setFeeds} feedIndex={feedIndex} reflashingTime={reflashingTime} config={config} t={t} onClose={()=>{
                     setFeedIndex(false);
-                }} />
+                }} dispatchToast={dispatchToast} />
 
             </div>
             <Toaster toasterId={toasterId} />

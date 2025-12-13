@@ -64,5 +64,7 @@
 
     "reflash_noanal": "未配置分析用模型，跳过",
     "reflash_notitle": "未配置推流用模型，跳过",
+    "reflash_noatc": "未配置文章生成模型，滚",
+    "reflash_nocmt": "未配置评论生成模型，跳过",
     "reflash_err": "请求发生错误"
 }

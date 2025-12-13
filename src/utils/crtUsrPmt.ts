@@ -59,3 +59,15 @@ export function crtUsrTitle(lang: 'zh-CN' | 'en', pfr: string[]): string{
     console.log(text);
     return text;
 };
+
+export function crtUsrArticle(lang: 'zh-CN' | 'en', feed: feedType, pfr: string[]): string{
+    let text = `==========${lang === 'zh-CN' ? '标题' : 'Title'}==========\n`;
+    text += feed.title + '\n\n';
+    text += `==========${lang === 'zh-CN' ? '概览' : 'Overview'}==========\n`;
+    text += feed.overview + '\n\n';
+    text += `==========${lang === 'zh-CN' ? '用户偏好' : 'User Preferences'}==========\n`;
+    text += crtPfr(pfr, false) + '\n\n';
+    text += `====================\n${lang === 'zh-CN' ? '请生成正文' : 'Please generate the article content'}`;
+    console.log(text);
+    return text;
+};
