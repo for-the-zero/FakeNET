@@ -33,8 +33,8 @@ const Comment = ({ comment, onLikeChange }: {comment: commentType, onLikeChange:
     </Card>;
 };
 
-export const AtcDrawer = memo(({feeds, feedIndex, setFeeds, config, t, onClose}: 
-    {feeds: feedsType, setFeeds: Dispatch<SetStateAction<feedsType>>, feedIndex: number | false, config: configType, t: (key: string)=>string, onClose: ()=>void}
+export const AtcDrawer = memo(({feeds, feedIndex, setFeeds, reflashingTime, config, t, onClose}: 
+    {feeds: feedsType, setFeeds: Dispatch<SetStateAction<feedsType>>, feedIndex: number | false, reflashingTime: number, config: configType, t: (key: string)=>string, onClose: ()=>void}
 ) => {
 
     // TODO:
@@ -82,7 +82,12 @@ export const AtcDrawer = memo(({feeds, feedIndex, setFeeds, config, t, onClose}:
                         }
                     </div>
                 </>)
-                : null
+                : (<Skeleton style={{display: "block"}}>
+                        {Array.from({length: 10 + Math.floor(Math.random() * 100)}, (_, i)=>{
+                            return (<SkeletonItem style={{width: `${5 + Math.random() * 35}%`, display: "inline-block", marginRight: '20px', marginBottom: '10px'}} />);
+                        })}
+                    </Skeleton>
+                )
             }
         </DrawerBody>
     </Drawer>);

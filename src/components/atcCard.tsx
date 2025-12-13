@@ -1,4 +1,4 @@
-import { Card, CardHeader, Title3, Text, Body1 } from "@fluentui/react-components";
+import { Card, CardHeader, Subtitle1, Text, Caption1 } from "@fluentui/react-components";
 import { memo } from "react";
 import { IconUser } from "./usrIcon";
 
@@ -13,8 +13,8 @@ export const ArticleTitle = memo(({title, author, overview, onClick}: {title: st
         >
             <CardHeader 
                 image={<IconUser name={author} />} 
-                header={<Title3>{title}</Title3>}
-                description={<Body1>{author}</Body1>}
+                header={<Subtitle1>{title}</Subtitle1>}
+                description={<Caption1>{author}</Caption1>}
             />
             <Text>{overview}</Text>
         </Card>

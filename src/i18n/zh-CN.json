@@ -4,6 +4,7 @@
     "refresh": "刷新",
     "settings": "设置",
     "empty_feed": "没有内容，戳一下刷新获取内容 （￣︶￣）↗",
+    "reflashing_feed": "海内存知己，天涯若比邻\n加油，你正在成功，请坐和放宽，你的推送（是的，所有推送）都将令自己快乐，不需要幸福倒计时即可幸福",
 
     "appset": "常规设置",
     "appset_theme": "深色模式",
@@ -59,5 +60,9 @@
     "about_me": "作者：for_the_zero",
     "about_uic": "组件库：Fluent UI React",
 
-    "comment": "评论"
+    "comment": "评论",
+
+    "reflash_noanal": "未配置分析用模型，跳过",
+    "reflash_notitle": "未配置推流用模型，跳过",
+    "reflash_err": "请求发生错误"
 }

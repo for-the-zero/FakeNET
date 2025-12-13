@@ -91,17 +91,30 @@ export async function reqAI(ai: AIConfigType, prompts: {sys: string, user: strin
 
     // error
     } catch (error: any) {
-        let errorMsg = 'Unknown';
-        if (error instanceof TypeError || error instanceof SyntaxError || error instanceof Error) {
-            errorMsg = error.message;
+        let message = '';
+        if (error instanceof TypeError) {
+            if (error.message === 'Failed to fetch' || /networkerror/i.test(error.message)) {
+                message = 'Couldn\'t connect to the server';
+            } else if (/cors/i.test(error.message)) {
+                message = 'CORS blocked';
+            } else {
+                message = `Browser network error: ${error.message}`;
+            };
+        } else if (error?.status) {
+            switch (error.status) {
+                case 401: message = '401 Invalid or expired API key.'; break;
+                case 403: message = '403 Access denied.'; break;
+                case 429: message = '429 Too many requests.'; break;
+                default:  message = `Service error (HTTP ${error.status}).`;
+            };
+        } else if (error instanceof Error) {
+            message = error.message;
         } else if (typeof error === 'string') {
-            errorMsg = error;
-        } else if (typeof error === 'object') {
-            errorMsg = JSON.stringify(error);
+            message = error;
         } else {
-            errorMsg = 'Unknown'
+            message = 'Unknown error. Please retry or contact support.';
         };
-        return { result: errorMsg, error: true };
+        return { result: message, error: true };
     };
     return cb;
 };

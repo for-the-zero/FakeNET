@@ -36,6 +36,7 @@ export function crtUsrAnalyze(lang: 'zh-CN' | 'en', feeds: feedsType, pfr: prefT
         text += crtPfr(pfr.comments, true) + '\n\n';
         text += lang === 'zh-CN' ? '根据以上数据，给出对偏好的修改' : 'Suggest changes based on the above data';
     };
+    console.log(text);
     return text;
 };
 
@@ -47,6 +48,7 @@ export function crtUsrComment(lang: 'zh-CN' | 'en', feed: feedType, pfr: string[
     text += `==========${lang === 'zh-CN' ? '用户偏好' : 'User Preferences'}==========\n`;
     text += crtPfr(pfr, false) + '\n\n';
     text += `====================\n${lang === 'zh-CN' ? '请生成评论列表' : 'Please generate comments list'}`;
+    console.log(text);
     return text;
 };
 
@@ -54,5 +56,6 @@ export function crtUsrTitle(lang: 'zh-CN' | 'en', pfr: string[]): string{
     let text = lang === 'zh-CN' ? '以下是用户的相关的偏好列表：' : 'Relevant user preferences list:';
     text += '\n' + crtPfr(pfr, false) + '\n';
     text += '\n' + (lang === 'zh-CN' ? '请生成推送内容' : 'Please generate push content');
+    console.log(text);
     return text;
 };

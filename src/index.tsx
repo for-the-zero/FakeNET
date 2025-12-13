@@ -1,7 +1,7 @@
 import { useState, useEffect, useId } from 'react';
 import { FluentProvider, webLightTheme, webDarkTheme,
-    Button, Title3, Text,
-    Toaster, useToastController,
+    Button, Title3, Text, Spinner,
+    Toaster, useToastController, Toast, ToastTitle, ToastBody
 } from '@fluentui/react-components';
 import { 
     ArrowCounterclockwiseRegular
@@ -12,6 +12,9 @@ import { ArticleTitle } from './components/atcCard';
 import { AtcDrawer } from './components/atc';
 
 import { defaultConfig, defaultFeeds } from './utils/defaultValues';
+import { reqAI } from './utils/reqAI';
+import { pcsTitles } from './utils/pcsAIRes';
+import { crtUsrTitle } from './utils/crtUsrPmt';
 import { useTranslation } from 'react-i18next';
 
 export function App(){
@@ -88,6 +91,7 @@ export function App(){
 
     // feed
     const [feeds, setFeeds] = useState<feedsType>(defaultFeeds);
+    const [isFeedsLoaded, setIsFeedsLoaded] = useState(false);
     useEffect(() => {
         let ls = localStorage.getItem('fakenet_feeds');
         if(ls){
@@ -98,26 +102,49 @@ export function App(){
         } else {
             localStorage.setItem('fakenet_feeds', JSON.stringify(defaultFeeds));
         };
+        setIsFeedsLoaded(true);
     }, []);
     useEffect(() => {
+        if(!isFeedsLoaded){return;};
         localStorage.setItem('fakenet_feeds', JSON.stringify(feeds));
-    }, [feeds]);
+    }, [feeds, isFeedsLoaded]);
 
     // refresh
     const [isReflashing, setIsReflashing] = useState(false);
+    const [reflashingTime, setReflashingTime] = useState(Date.now());
     const refreshFeed = async() => {
         setIsReflashing(true);
-        if(config.analyzeAI.baseURL === '' || config.analyzeAI.model === ''){
-            //TODO: 跳过
-        } else {
-            //TODO:
+        if(!feeds.analyzed){
+            setFeeds({analyzed: false, feeds: [...feeds.feeds ?? []]});
+            if(config.analyzeAI.baseURL === '' || config.analyzeAI.model === ''){
+                dispatchToast(<Toast>
+                    <ToastTitle>{t('reflash_noanal')}</ToastTitle>
+                </Toast>,{intent: 'info'});
+            } else {
+                //TODO:
+            };
         };
         if(config.titlesAI.baseURL === '' || config.titlesAI.model === ''){
-            //TODO: 跳过
+            dispatchToast(<Toast>
+                <ToastTitle>{t('reflash_notitle')}</ToastTitle>
+            </Toast>,{intent: 'info'});
         } else {
-            //TODO:
+            setFeeds({analyzed: true, feeds: null});
+            setReflashingTime(Date.now());
+            let result = await reqAI(config.titlesAI, 
+                {sys: config.prompts[config.lang].titles, 
+                user: crtUsrTitle(config.lang, config.preferences.article)}, 
+            true);
+            if(!result.error){
+                setFeeds(pcsTitles(result.result));
+                setReflashingTime(Date.now());
+            } else {
+                dispatchToast(<Toast>
+                    <ToastTitle>{t('reflash_err')}</ToastTitle>
+                    <ToastBody>{result.result}</ToastBody>
+                </Toast>, {intent: 'error'});
+            };
         };
-        //TODO:
         setIsReflashing(false);
     };
 
@@ -141,7 +168,7 @@ export function App(){
                 <Title3>{t('title')}</Title3>
                 <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px'}}>
                     <SetUI config={config} setConfig={setConfig} t={t} isNotNarSc={isNotNarSc} dispatchToast={dispatchToast} />
-                    <Button appearance="primary" icon={<ArrowCounterclockwiseRegular />} onClick={refreshFeed}>
+                    <Button appearance="primary" icon={isReflashing ? <Spinner size='tiny'/> : <ArrowCounterclockwiseRegular />} disabled={isReflashing} onClick={refreshFeed}>
                         <Text weight="regular">
                             {t('refresh')}
                         </Text>
@@ -157,8 +184,8 @@ export function App(){
                 width: 'calc(100% - 32px)',
                 alignItems: 'center'
             }}>
-                {feeds.feeds === null ? (<div>
-                    <Text>{t('empty_feed')}</Text>
+                {feeds.feeds === null ? (<div style={{textAlign: 'center'}}>
+                    <Text style={{whiteSpace: 'pre', textAlign: 'center'}}>{isReflashing ? t('reflashing_feed') :  t('empty_feed')}</Text>
                 </div>) : (feeds.feeds.map((feed, index) => (
                     <ArticleTitle 
                         key={index}
@@ -171,7 +198,7 @@ export function App(){
                     />
                 )))}
 
-                <AtcDrawer feeds={feeds} setFeeds={setFeeds} feedIndex={feedIndex} config={config} t={t} onClose={()=>{
+                <AtcDrawer feeds={feeds} setFeeds={setFeeds} feedIndex={feedIndex} reflashingTime={reflashingTime} config={config} t={t} onClose={()=>{
                     setFeedIndex(false);
                 }} />
 
