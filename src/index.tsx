@@ -25,21 +25,20 @@ export function App(){
     useEffect(() => {
         let ls = localStorage.getItem('fakenet');
         if(ls){
-            let lsParsed = JSON.parse(ls) as configType;
-            if(lsParsed){
-                setConfig(lsParsed);
-            }else{
-                localStorage.removeItem('fakenet');
-                localStorage.setItem('fakenet', JSON.stringify(config));
-            };
-        }else{
-            localStorage.setItem('fakenet', JSON.stringify(config));
+            try{
+                const parsed = JSON.parse(ls) as configType;
+                if(parsed){setConfig(parsed);};
+            } catch {};
+        } else {
+            localStorage.setItem('fakenet', JSON.stringify(defaultConfig));
         };
         setIsConfigLoaded(true);
-    },[]);
+    }, []);
     useEffect(() => {
-        localStorage.setItem('fakenet', JSON.stringify(config));
-    }, [config]);
+        if(isConfigLoaded){
+            localStorage.setItem('fakenet', JSON.stringify(config));
+        };
+    }, [config, isConfigLoaded]);
 
     // darkmode
     useEffect(() => {
@@ -92,13 +91,10 @@ export function App(){
     useEffect(() => {
         let ls = localStorage.getItem('fakenet_feeds');
         if(ls){
-            let lsParsed = JSON.parse(ls) as feedsType;
-            if(lsParsed){
-                setFeeds(lsParsed);
-            }else{
-                localStorage.removeItem('fakenet_feeds');
-                localStorage.setItem('fakenet_feeds', JSON.stringify(defaultFeeds))
-            };
+            try {
+                const parsed = JSON.parse(ls) as feedsType;
+                if(parsed){setFeeds(parsed);};
+            } catch {};
         } else {
             localStorage.setItem('fakenet_feeds', JSON.stringify(defaultFeeds));
         };
@@ -108,7 +104,9 @@ export function App(){
     }, [feeds]);
 
     // refresh
-    const refreshFeed = () => {
+    const [isReflashing, setIsReflashing] = useState(false);
+    const refreshFeed = async() => {
+        setIsReflashing(true);
         if(config.analyzeAI.baseURL === '' || config.analyzeAI.model === ''){
             //TODO: 跳过
         } else {
@@ -120,7 +118,11 @@ export function App(){
             //TODO:
         };
         //TODO:
+        setIsReflashing(false);
     };
+
+    // open
+    const [feedIndex, setFeedIndex] = useState<false | number>(false);
 
 
     // main
@@ -164,13 +166,14 @@ export function App(){
                         author={feed.author}
                         overview={feed.overview}
                         onClick={()=>{
-                            //TODO:
+                            setFeedIndex(index);
                         }}
                     />
                 )))}
 
-                {/* TODO:测试，一会删 */}
-                <AtcDrawer feeds={{feeds: [{title: 'test', author: 'test', overview: 'test', article: null, like: 0, comments: null}], analyzed: true}} feedIndex={0} config={config} onClose={()=>{}} />
+                <AtcDrawer feeds={feeds} setFeeds={setFeeds} feedIndex={feedIndex} config={config} t={t} onClose={()=>{
+                    setFeedIndex(false);
+                }} />
 
             </div>
             <Toaster toasterId={toasterId} />
