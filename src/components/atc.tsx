@@ -28,10 +28,10 @@ const Comment = memo(({ comment, onLikeChange }: {comment: commentType, onLikeCh
             justifyContent: "flex-end"
         }}>
             <Button appearance="subtle" shape="circular" size="small" icon={comment.like === 1 ? <ThumbLikeFilled/> : <ThumbLikeRegular/>} onClick={()=>{
-                onLikeChange(comment.like === 1 ? 0 : 1)
+                onLikeChange(comment.like === 1 ? 0 : 1);
             }} />
             <Button appearance="subtle" shape="circular" size="small" icon={comment.like === -1 ? <ThumbDislikeFilled/> : <ThumbDislikeRegular/>} onClick={()=>{
-                onLikeChange(comment.like === -1 ? 0 : -1)
+                onLikeChange(comment.like === -1 ? 0 : -1);
             }}/>
         </div>
     </Card>;
@@ -46,7 +46,9 @@ export const AtcDrawer = memo(({feeds, feedIndex, setFeeds, reflashingTime, conf
     });
     const reqArticle = async()=>{
         if(feeds.feeds && typeof feedIndex === 'number' && feeds.feeds[feedIndex]){
-            if(!feeds.feeds[feedIndex].article){
+            let theReflashingTime = getNewestReflashingTime();
+            let currentFeed = feeds.feeds[feedIndex];
+            if(!currentFeed.article){
                 if(config.articleAI.baseURL === '' || config.articleAI.model === ''){
                     dispatchToast(<Toast>
                         <ToastTitle>{t('reflash_noatc')}</ToastTitle>
@@ -55,10 +57,10 @@ export const AtcDrawer = memo(({feeds, feedIndex, setFeeds, reflashingTime, conf
                 };
                 let res = await reqAI(config.articleAI, {
                     sys: config.prompts[config.lang].article,
-                    user: crtUsrArticle(config.lang, feeds.feeds[feedIndex], config.preferences.article),
+                    user: crtUsrArticle(config.lang, currentFeed, config.preferences.article),
                 }, false);
                 if(!res.error){
-                    if(getNewestReflashingTime() === reflashingTime){
+                    if(getNewestReflashingTime() === theReflashingTime){
                         setFeeds(prevFeeds => ({
                             ...prevFeeds,
                             feeds: prevFeeds.feeds?.map((feed, fIdx) =>
@@ -67,15 +69,19 @@ export const AtcDrawer = memo(({feeds, feedIndex, setFeeds, reflashingTime, conf
                                 : feed
                             ) ?? null
                         }));
+                        currentFeed = { ...currentFeed, article: res.result };
+                    } else {
+                        return;
                     };
                 }else{
                     dispatchToast(<Toast>
                         <ToastTitle>{t('reflash_err')}</ToastTitle>
                         <ToastBody>{res.result}</ToastBody>
                     </Toast>, {intent: 'error'});
+                    return;
                 };
             };
-            if(!feeds.feeds[feedIndex].comments){
+            if(!currentFeed.comments && currentFeed.article){
                 if(config.commentsAI.baseURL === '' || config.commentsAI.model === ''){
                     dispatchToast(<Toast>
                         <ToastTitle>{t('reflash_nocmt')}</ToastTitle>
@@ -84,10 +90,10 @@ export const AtcDrawer = memo(({feeds, feedIndex, setFeeds, reflashingTime, conf
                 };
                 let res = await reqAI(config.commentsAI, 
                     {sys: config.prompts[config.lang].comments,
-                    user: crtUsrComment(config.lang, feeds.feeds[feedIndex], config.preferences.comments)},
+                    user: crtUsrComment(config.lang, currentFeed, config.preferences.comments)},
                 true);
                 if(!res.error){ 
-                    if(getNewestReflashingTime() === reflashingTime){
+                    if(getNewestReflashingTime() === theReflashingTime){
                         setFeeds(prevFeeds => ({
                             ...prevFeeds,
                             feeds: prevFeeds.feeds?.map((feed, fIdx) =>
@@ -122,14 +128,40 @@ export const AtcDrawer = memo(({feeds, feedIndex, setFeeds, reflashingTime, conf
             {feedIndex !== false && feeds.feeds
                 ? (<>
                     {feeds.feeds[feedIndex]?.article
-                        ? (<Markdown>{feeds.feeds[feedIndex].article}</Markdown>)
+                        ? (<>
+                            <Markdown>{feeds.feeds[feedIndex].article}</Markdown>
+                            <div style={{
+                                display: "flex",
+                                justifyContent: "flex-end"
+                            }}>
+                                <Button appearance="subtle" shape="circular" size="small" icon={feeds.feeds[feedIndex].like === 1 ? <ThumbLikeFilled/> : <ThumbLikeRegular/>} onClick={()=>{
+                                    setFeeds(prevFeeds => ({
+                                        ...prevFeeds,
+                                        feeds: prevFeeds.feeds?.map((feed, fIdx) =>
+                                            fIdx === feedIndex
+                                            ? { ...feed, like: feed.like === 1 ? 0 : 1 }
+                                            : feed
+                                        ) ?? null
+                                    }));
+                                }} />
+                                <Button appearance="subtle" shape="circular" size="small" icon={feeds.feeds[feedIndex].like === -1 ? <ThumbDislikeFilled/> : <ThumbDislikeRegular/>} onClick={()=>{
+                                    setFeeds(prevFeeds => ({
+                                        ...prevFeeds,
+                                        feeds: prevFeeds.feeds?.map((feed, fIdx) =>
+                                            fIdx === feedIndex
+                                            ? { ...feed, like: feed.like === -1 ? 0 : -1 }
+                                            : feed
+                                        ) ?? null
+                                    }));
+                                }}/>
+                            </div>
+                        </>)
                         : (<Skeleton style={{display: "block"}}>
                             {Array.from({length: 10 + Math.floor(Math.random() * 15)}, (_, i)=>{
                                 return (<SkeletonItem style={{width: `${5 + Math.random() * 35}%`, display: "inline-block", marginRight: '20px', marginBottom: '10px'}} />);
                             })}
                         </Skeleton>)
                     }
-                    <Divider />
                     <div style={{
                         margin: "20px",
                         display: "flex",
@@ -138,6 +170,7 @@ export const AtcDrawer = memo(({feeds, feedIndex, setFeeds, reflashingTime, conf
                     }}>
                         {feeds.feeds[feedIndex]?.article
                             ? <>
+                                <Divider />
                                 <Subtitle1>{t('comment')}</Subtitle1>
                                 {feeds.feeds[feedIndex]?.comments 
                                     ? feeds.feeds[feedIndex].comments.map((comment, i)=>{
