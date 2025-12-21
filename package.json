@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "bun run src/index.html",
-    "build": "bun build ./src/index.html --outdir=dist --sourcemap --target=browser --minify --define:process.env.NODE_ENV='\"production\"' --env='BUN_PUBLIC_*'"
+    "build": "bun run cleanDist.ts & bun build ./src/index.html --outdir=dist --sourcemap --target=browser --minify --no-sourcemap"
   },
   "dependencies": {
     "@fluentui/react-components": "^9.72.2",
