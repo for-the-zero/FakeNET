@@ -13,8 +13,8 @@ import { AtcDrawer } from './components/atc';
 
 import { defaultConfig, defaultFeeds } from './utils/defaultValues';
 import { reqAI } from './utils/reqAI';
-import { pcsTitles } from './utils/pcsAIRes';
-import { crtUsrTitle } from './utils/crtUsrPmt';
+import { pcsTitles, pcsAnlayze } from './utils/pcsAIRes';
+import { crtUsrTitle, crtUsrAnalyze } from './utils/crtUsrPmt';
 import { useTranslation } from 'react-i18next';
 
 export function App(){
@@ -113,15 +113,31 @@ export function App(){
     const [isReflashing, setIsReflashing] = useState(false);
     const [reflashingTime, setReflashingTime] = useState(Date.now());
     const refreshFeed = async() => {
+        let analyzed = feeds.analyzed;
+        let pfr = config.preferences;
         setIsReflashing(true);
-        if(!feeds.analyzed){
+        if(!analyzed){
             setFeeds({analyzed: false, feeds: [...feeds.feeds ?? []]});
             if(config.analyzeAI.baseURL === '' || config.analyzeAI.model === ''){
                 dispatchToast(<Toast>
                     <ToastTitle>{t('reflash_noanal')}</ToastTitle>
                 </Toast>,{intent: 'info'});
             } else {
-                //TODO:
+                let result = await reqAI(config.analyzeAI, {
+                    sys: config.prompts[config.lang].analyze,
+                    user: crtUsrAnalyze(config.lang, feeds, pfr)
+                },true);
+                if(!result.error){
+                    pfr = pcsAnlayze(result.result, pfr);
+                    console.log(pfr);
+                    setConfig(prevConfig => ({...prevConfig, preferences: pfr}));
+                } else {
+                    dispatchToast(<Toast>
+                        <ToastTitle>{t('reflash_err')}</ToastTitle>
+                    </Toast>, {intent: 'error'});
+                };
+                setFeeds({analyzed: true, feeds: null});
+                analyzed = true;
             };
         };
         if(config.titlesAI.baseURL === '' || config.titlesAI.model === ''){
@@ -129,11 +145,11 @@ export function App(){
                 <ToastTitle>{t('reflash_notitle')}</ToastTitle>
             </Toast>,{intent: 'info'});
         } else {
-            setFeeds({analyzed: true, feeds: null});
+            setFeeds({analyzed, feeds: null});
             setReflashingTime(Date.now());
             let result = await reqAI(config.titlesAI, 
                 {sys: config.prompts[config.lang].titles, 
-                user: crtUsrTitle(config.lang, config.preferences.article)}, 
+                user: crtUsrTitle(config.lang, pfr.article)}, 
             true);
             if(!result.error){
                 setFeeds(pcsTitles(result.result));
@@ -185,7 +201,11 @@ export function App(){
                 alignItems: 'center'
             }}>
                 {feeds.feeds === null ? (<div style={{textAlign: 'center'}}>
-                    <Text style={{whiteSpace: 'pre', textAlign: 'center'}}>{isReflashing ? t('reflashing_feed') :  t('empty_feed')}</Text>
+                    <Text style={{
+                        whiteSpace: 'pre-warp', textAlign: 'center'
+                    }}>
+                        {isReflashing ? t('reflashing_feed') :  t('empty_feed')}
+                    </Text>
                 </div>) : (feeds.feeds.map((feed, index) => (
                     <ArticleTitle 
                         key={index}

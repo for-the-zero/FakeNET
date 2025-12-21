@@ -10,3 +10,8 @@ export function IconUser({ name, ...props }: { name: string } & AvatarProps) {
 
     return (<Avatar image={{src: dataUrl}} size={36} {...props} />);
 };
+
+export function getSvgDataUrl(name: string) {
+    const svg = toSvg(name, 100);
+    return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+};

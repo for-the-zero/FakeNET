@@ -184,7 +184,7 @@ export const SetUI = memo(function({config, setConfig, t, isNotNarSc, dispatchTo
                     </TabList>
                     <div style={{
                         maxHeight: 'calc(100vh - 150px)', overflowY: 'auto',
-                        width: '100%', paddingRight: '16px'
+                        width: '95%', paddingRight: '16px', margin: 'auto'
                     }}> 
                         {tab==='app' && (<div>
                             <Field label={<Text weight='bold'>{"语言 / Language"}</Text>}>
