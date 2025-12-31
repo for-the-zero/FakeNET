@@ -1,3 +1,13 @@
+function getTime(lang: 'zh-CN' | 'en'): string {
+    return ({'zh-CN': [
+        ((d = new Date(Date.now() - Math.floor(Math.random() * 30) * 86400000)) => `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`)(),
+        (() => { const n = Math.floor(Math.random() * 30) + 1; const u = [' 天', ' 小时', ' 分钟'][Math.floor(Math.random() * 3)]; return `${n}${u}前`; })()
+    ], 'en': [
+        new Date(Date.now() - Math.floor(Math.random() * 30) * 86400000).toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'}),
+        (() => { const n = Math.floor(Math.random() * 30) + 1; const u = ['Day', 'Hour', 'Minute'][Math.floor(Math.random() * 3)]; return `${n} ${u}${n > 1 ? 's' : ''} ago`; })()
+    ]}[lang][Math.round(Math.random())]) as string;
+};
+
 export function pcsAnlayze(input: any, old: prefType): prefType {
     let pref: prefType = { ...old };
     if(input.article){
@@ -64,7 +74,7 @@ export function pcsAnlayze(input: any, old: prefType): prefType {
 };
 
 
-export function pcsComments(input: any): commentType[] {
+export function pcsComments(lang: 'zh-CN' | 'en', input: any): commentType[] {
     let comments: commentType[] = [];
     if(Array.isArray(input) && input.length > 0){
         for(let i = 0; i < input.length; i++){
@@ -74,6 +84,7 @@ export function pcsComments(input: any): commentType[] {
             let comment: commentType = {
                 username: input[i].username ? input[i].username : 'Anonymous',
                 content: input[i].content,
+                time: getTime(lang),
                 like: 0
             };
             comments.push(comment);

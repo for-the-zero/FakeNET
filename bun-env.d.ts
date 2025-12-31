@@ -60,5 +60,6 @@ interface feedType {
 interface commentType {
     username: string,
     content: string,
+    time: string,
     like: -1 | 0 | 1
 };

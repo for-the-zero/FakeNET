@@ -24,6 +24,7 @@ const Comment = memo(({ comment, onLikeChange }: {comment: commentType, onLikeCh
                 getSvgDataUrl(comment.username)
             }}}
             name={comment.username}
+            secondaryText={comment.time}
         />
         <Text>{comment.content}</Text>
         <div style={{
@@ -116,7 +117,7 @@ export const AtcDrawer = memo(({feeds, feedIndex, setFeeds, reflashingTime, conf
                             ...prevFeeds,
                             feeds: prevFeeds.feeds?.map((feed, fIdx) =>
                                 fIdx === feedIndex
-                                ? { ...feed, comments: pcsComments(res.result) }
+                                ? { ...feed, comments: pcsComments(config.lang, res.result) }
                                 : feed
                             ) ?? null
                         }));
